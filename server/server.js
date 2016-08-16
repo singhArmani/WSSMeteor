@@ -13,18 +13,6 @@ var leakDetected = 0; // 0:no leak, 1:a little leak, 2:much leak
 
 Meteor.startup(function() {
     console.log('started');
-    // CurrentFlowRate.remove({});
-    // MonthFlowRate.remove({});
-    // YearFlowRate.remove({});
-
-    // startLogging(1000, Meteor.bindEnvironment(function(flowRateSample) {
-    //     var date = new Date();
-    //     FlowSamples.insert({
-    //         rate: flowRateSample,
-    //         created_on: date.getTime()
-    //     }, function(error, result) {
-    //     });
-    // }));
 
     // move the data from low-scale collection to high-scale collection and remove the useless data from collection
     Meteor.setInterval(Meteor.bindEnvironment(function() {
@@ -42,7 +30,7 @@ Meteor.startup(function() {
             // dealMonthFlowRateCollection(oneMonthAgo);
             // for test, if use it to product env, use above two lines.
             dealCurrentFlowRateCollection(oneHourAgo);
-            dealMonthFlowRateCollection(oneDayAgo);
+            dealMonthFlowRateCollection();
         }
     }), 6000);
 
@@ -305,61 +293,3 @@ function dealMonthFlowRateCollection(time) {
     });
 }
 
-/*
-startLogging = function(logInterval, logFlowRate) {
-
-    Meteor.setInterval(function() {
-        if (!DEBUG) {
-            led.writeSync(1);
-        }
-        if (leakDetected) {
-            Meteor.setTimeout(function() {}, 20);
-        } else {
-            Meteor.setTimeout(function() {
-                if (!DEBUG) {
-                    led.writeSync(0);
-                }
-            }, 10);
-        }
-    }, 1000);
-    //logFlowRate(count);
-    //count = 0;
-
-    Meteor.setInterval(Meteor.bindEnvironment(function() {
-        var today = new Date(),
-            oneDay = (1000 * 60 * 60 * 24),
-            oneDayAgo = new Date(today.valueOf() - (1 * oneDay));
-
-        var day = FlowSamples.aggregate([{
-            "$match": {
-                "created_on": {
-                    $gt: oneDayAgo
-                }
-            }
-        }, {
-            "$group": {
-                _id: null,
-                "count": {
-                    "$sum": 1
-                },
-                "totalValue": {
-                    "$sum": "$rate"
-                }
-            }
-        }]);
-
-        if (!day[0]) return;
-        if (maxWaterUsePerDay < day[0].totalValue) {
-            leakDetected = true;
-            //led.writeSync(1);
-        } else {
-            leakDetected = false;
-            //led.writeSync(0);
-        }
-        //  var litres = Settings.find({name: "litres"});
-        //  console.log(litres['value']);
-        // var hours = Settings.findOne({name: "hours"});
-        // logFlowRate(count);
-    }), logInterval);
-};
-*/
