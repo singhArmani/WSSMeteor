@@ -1,0 +1,148 @@
+<template name="Manage">
+    <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                      <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Create Store</a>
+                </h3>
+            </div>
+            <div id="collapse1" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <div class="autoForm">
+                      {{#autoForm id="selectForm" type="insert" schema=StoresSchema collection=StoresCollecion template="bootstrap3-horizontal"}}
+                      {{> afQuickField name="storeName" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="status" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="carrier" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="lob" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="bdm" options=userNames label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="visible" options=trueFalse label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="zone" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="dealerCode" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="combinedAddress" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="shipAddress" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="shipCity" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="shipState" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="shipZip" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="country" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="metro" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="franchisee" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="storeManager" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="contactNumber" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="email" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="managed" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="channel" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="2015tier" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="2016tier" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="comment" label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="products" options=productsOptions label-class="col-xs-3" input-col-class="col-xs-9"}}
+                      {{> afQuickField name="questionGroups" options=questionGroupsOptions label-class="col-xs-3" input-col-class="col-xs-9"}}
+
+                      <div>
+                          <button type="submit" class="btn btn-danger">Submit</button>
+                          <button type="reset" class="btn btn-danger">Reset</button>
+                      </div>
+                      {{/autoForm}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <!-- <h3 class="panel-title">Manage question groups and products in selected channel and carrier</h3> -->
+                <h3 class="panel-title">
+                  <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Manage question groups and products in selected channel and carrier</a>
+                </h3>
+            </div>
+            <div id="collapse2" class="panel-collapse collapse">
+                <div class="panel-body">
+                    {{>ManageFilter}} You have chosen {{storesCount}} stores
+                    <div class="filters">
+                        <div class="flexMe">
+                            <div class="form-group flex1" style="flex:1;    padding: 10px;">
+                                <select id="storesQuestionGroups">
+                                    <option value="" selected> -- none -- </option>
+                                    {{#each storesQuestionGroups}}
+                                    <option value="{{this.value}}">{{this.label}}</option>
+                                    {{/each}}
+                                </select>
+                                <label for="storesQuestionGroups" class="control-label">Choose the general question groups</label><i class="bar"></i>
+                                <button class="btn btn-danger" id="delStoresQuestionGroups">DEL</button>
+                            </div>
+                            <div class="form-group flex1" style="flex:1;    padding: 10px;">
+                                <select id="storesQuestionGroupsNo">
+                                    <option value="" selected> -- none -- </option>
+                                    {{#each storesQuestionGroupsNo}}
+                                    <option value="{{this.value}}">{{this.label}}</option>
+                                    {{/each}}
+                                </select>
+                                <label for="storesQuestionGroupsNo" class="control-label">Choose the general question groups</label><i class="bar"></i>
+                                <button class="btn btn-danger" id="addStoresQuestionGroups">ADD</button>
+                            </div>
+                        </div>
+
+
+                        <div class="flexMe">
+                            <div class="form-group flex1" style="flex:1;    padding: 10px;">
+                                <select id="productsList">
+                                    <option value="" selected> -- none -- </option>
+                                    {{#each productsList}}
+                                    <option value="{{this.value}}">{{this.label}}</option>
+                                    {{/each}}
+                                </select>
+                                <label for="productsList" class="control-label">Choose the products</label><i class="bar"></i>
+                                <button class="btn btn-danger" id="delProduct">DEL</button>
+                            </div>
+
+                            <div class="form-group flex1" style="flex:1;    padding: 10px;">
+                                <select id="productsListNo">
+                                    <option value="" selected> -- none -- </option>
+                                    {{#each productsListNo}}
+                                    <option value="{{this.value}}">{{this.label}}</option>
+                                    {{/each}}
+                                </select>
+                                <label for="productsListNo" class="control-label">Choose the products</label><i class="bar"></i>
+                                <button class="btn btn-danger" id="addProduct">ADD</button>
+                            </div>
+                        </div>
+
+                        <!-- <div class="flexMe">
+                            <div class="form-group flex1" style="flex:1;    padding: 10px;">
+                                <select id="productsQuestionGroups">
+                                    <option value="" selected> - none - </option>
+                                    {{#each productsQuestionGroups}}
+                                    <option value="{{this.value}}">{{this.label}}</option>
+                                    {{/each}}
+                                </select>
+                                <label for="productsQuestionGroups" class="control-label">Choose the quesion groups</label><i class="bar"></i>
+                                <button class="btn btn-danger" id="delProductQuestionGroup">DEL</button>
+                            </div>
+
+                            <div class="form-group flex1" style="flex:1;    padding: 10px;">
+                                <select id="productsQuestionGroupsNo">
+                                    <option value="" selected> - none - </option>
+                                    {{#each productsQuestionGroupsNo}}
+                                    <option value="{{this.value}}">{{this.label}}</option>
+                                    {{/each}}
+                                </select>
+                                <label for="productsQuestionGroupsNo" class="control-label">Choose the quesion groups</label><i class="bar"></i>
+                                <button class="btn btn-danger" id="addProductQuestionGroup">ADD</button>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                  <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Manage question groups and products</a>
+                </h3>
+            </div>
+            <div id="collapse3" class="panel-collapse collapse">
+                <div class="panel-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
