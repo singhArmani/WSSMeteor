@@ -221,56 +221,28 @@ Template.dashboard3.events = {
                 drawLineChart(labelsLineChart,dataLineChart);
 
 
-            //     handleCurrentFlowRateQuery = CurrentFlowRate.find().observeChanges({
-            //     added: function(id, fields) {
-            //             console.log(fields);
-            //
-            //
-            //                 // if(!lineChartFLowRate) {
-            //                 //     var data = {
-            //                 //         labels: labels,
-            //                 //         datasets: [{
-            //                 //             label: "FLow Rate (L/s)",
-            //                 //             fill: true,
-            //                 //             lineTension: 0.2,
-            //                 //             backgroundColor: "rgba(60,141,188,0.9)",
-            //                 //             borderColor: "rgba(60,141,188,0.9)",
-            //                 //             borderCapStyle: 'round',
-            //                 //             borderDash: [],
-            //                 //             borderDashOffset: 0.0,
-            //                 //             borderJoinStyle: 'miter',
-            //                 //             pointBorderColor: "rgba(60,141,188,0.9)",
-            //                 //             pointBackgroundColor: "rgba(60,141,188,0.9)",
-            //                 //             pointBorderWidth: 0,
-            //                 //             pointHoverRadius: 0,
-            //                 //             pointHoverBackgroundColor: "rgba(60,141,188,0.9)",
-            //                 //             pointHoverBorderColor: "rgba(60,141,188,0.9)",
-            //                 //             pointHoverBorderWidth: 0,
-            //                 //             pointRadius: 0,
-            //                 //             pointHitRadius: 0,
-            //                 //             data: dataC,
-            //                 //         }]
-            //                 //     };
-            //                 //
-            //                 // }
-            //
-            //                 //filling up the data and keep pushing it
-            //                 // console.log("the lenght of allSamples is: ",allSamples.length);
-            //
-            //
-            //                 // lineChartFLowRate.data.labels = labels;
-            //                 // lineChartFLowRate.data.datasets[0].data = dataC;
-            //
-            //
-            //                 lineChartFLowRate.update();
-            //
-            //
-            //                 //Session.set('totalFlowRate', data[data.length - 1][1]);
-            //
-            //
-            //
-            //     }
-            // });
+                //lets handle the change of date now
+
+                handleCurrentFlowRateQuery = CurrentFlowRate.find().observeChanges({
+                added: function(id, fields) {
+                        console.log(fields);
+
+                            //Removing one item from the beginning
+                            lineChartFLowRate.data.datasets[0].data.shift()
+
+
+                            //adding one item from the end
+                            lineChartFLowRate.data.datasets[0].data.push((fields.rate*1000).toFixed(4))
+
+                            lineChartFLowRate.update();
+
+
+                            //Session.set('totalFlowRate', data[data.length - 1][1]);
+
+
+
+                }
+            });
                 break;
             case '7': console.log("switch statement's value 7");
 
