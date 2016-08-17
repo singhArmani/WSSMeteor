@@ -1,8 +1,11 @@
-lineChartFLowRate = null;
- myBarChart = null;
-var initializing = true;
 
-var handleCurrentFlowRateQuery = null;
+
+lineChartFLowRate = null;
+
+myBarChart = null;
+
+handleCurrentFlowRateQuery = null;
+
 Template.dashboard3.rendered = function() {
     Chart.defaults.global.animation.duration = 0;
 
@@ -20,95 +23,44 @@ Template.dashboard3.rendered = function() {
     var heightWithoutNavbar = $("body > #wrapper").height() - 61;
     $(".sidebard-panel").css("min-height", heightWithoutNavbar + "px");
 
-
+    var total = 0, dataLineChart = [], labelsLineChart = [], allSamples =[];
     //Reactive Computation for CurrentFlowRate Collection
-    if(Session.get("selectedDateRange"))
-    handleCurrentFlowRateQuery = CurrentFlowRate.find().observeChanges({
-        added: function(id, fields) {
-            // console.log("added ", id, fields);
-            //console.log(lineChartFLowRate)
-            if (!initializing) {
-                var allSamples = CurrentFlowRate.find({}, {
-                    limit:60,sort:{created_on:-1}
-                }).fetch();
 
-                var len = allSamples.length;
+    Tracker.autorun((computation)=>{
+        allSamples = CurrentFlowRate.find({}, {limit:60,sort:{created_on:-1}}).fetch();
+        console.log(allSamples.length);
+        if(allSamples.length==60) {
+            for (var i =  59; i >=0; i--) {
 
-                if (len ==60) {
-                    var total = 0;
-                    var dataC = [];
-                    var labels = [];
+                var val = allSamples[i];
+                console.log(val);
+                dataLineChart.push((val.rate * 1000).toFixed(4));
+                total += val.rate;
+                labelsLineChart.push('');
+            }
+            computation.stop();
+        }
 
-                    if (!lineChartFLowRate) {
+    })
 
-                        var data = {
-                            labels: labels,
-                            datasets: [{
-                                label: "FLow Rate (L/s)",
-                                fill: true,
-                                lineTension: 0.2,
-                                backgroundColor: "rgba(60,141,188,0.9)",
-                                borderColor: "rgba(60,141,188,0.9)",
-                                borderCapStyle: 'round',
-                                borderDash: [],
-                                borderDashOffset: 0.0,
-                                borderJoinStyle: 'miter',
-                                pointBorderColor: "rgba(60,141,188,0.9)",
-                                pointBackgroundColor: "rgba(60,141,188,0.9)",
-                                pointBorderWidth: 0,
-                                pointHoverRadius: 0,
-                                pointHoverBackgroundColor: "rgba(60,141,188,0.9)",
-                                pointHoverBorderColor: "rgba(60,141,188,0.9)",
-                                pointHoverBorderWidth: 0,
-                                pointRadius: 0,
-                                pointHitRadius: 0,
-                                data: dataC,
-                            }]
-                        };
-                        var ctx = document.getElementById("lineChartFLowRate").getContext("2d");
-                        lineChartFLowRate = new Chart(ctx, {
-                            type: 'line',
-                            data: data,
-                            options: {
-                                scales: {
-                                    yAxes: [{
-                                        ticks: {
-                                            min: 0,
-                                            //max: 100,
-                                            //stepSize: 10,
-                                            beginAtZero: true
-                                        }
-                                    }]
-
-                                }
-                            }
-                        });
-                    }
+    //Drawing the chart once we have data ready
+    drawLineChart(labelsLineChart,dataLineChart);
 
 
+    //handling live chart by observing the added fields
+        handleCurrentFlowRateQuery = CurrentFlowRate.find().observeChanges({
+            added:(id,fields)=>{
+                //Removing one item from the beginning
+                lineChartFLowRate.data.datasets[0].data.shift()
 
-                    //filling up the data and keep pushing it
-                    // console.log("the lenght of allSamples is: ",allSamples.length);
-                    for (var i = allSamples.length - 1; i >= 0; i--) {
 
-                        var val = allSamples[i];
-                        dataC.push((val.rate * 1000).toFixed(4));
-                        total += val.rate;
-                        labels.push('');
-                        //console.log("flowRate Info", val.rate, new Date(val.created_on).toISOString());
-                    }
+                //adding one item from the end
+                lineChartFLowRate.data.datasets[0].data.push((fields.rate*1000).toFixed(4))
 
-                    lineChartFLowRate.data.labels = labels;
-                    lineChartFLowRate.data.datasets[0].data = dataC;
-                    lineChartFLowRate.update();
-                    // console.log("The new data array is ",dataC)
-
-                    //Session.set('totalFlowRate', data[data.length - 1][1]);
-                }
+                lineChartFLowRate.update();
 
             }
-        }
-    });
+        })
 
 
     var handleInfoQuery = Info.find({
@@ -125,7 +77,6 @@ Template.dashboard3.rendered = function() {
         }
     });
 
-    initializing = false;
 };
 Template.dashboard3.helpers({
     getFlowRateClient: function() {
@@ -210,6 +161,7 @@ Template.dashboard3.events = {
                 var total = 0, dataLineChart = [], labelsLineChart = [];
                 var allSamples = CurrentFlowRate.find({}, {limit:60,sort:{created_on:-1}}).fetch();
                 console.log("all samples is..",allSamples)
+
                 for (var i =  59; i >=0; i--) {
 
                     var val = allSamples[i];
@@ -346,12 +298,6 @@ Template.dashboard3.destroyed = function() {
     $('#page-wrapper').removeClass('sidebar-content');
 };
 
-
-// //Testing purpose
-// Tracker.autorun(()=>{
-//     console.log("Current Selected Range autorun is "+Session.get("selectedDateRange"));
-//     //we can redraw the new graph and destroy the old one depending upong the value in the drop down list
-// })
 
 
 function drawLineChart(labels,dataC){
