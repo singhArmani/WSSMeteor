@@ -12,7 +12,12 @@
                                 Current Flow Rate
                             </h3>
                             <div class="pull-right">
-                                {{getLeakDetected}}
+                                <!--Date Range Picker -->
+                                <select id="DateRange">
+                                    <option value="1">A minute Ago</option>
+                                    <option value="7">few minutes Ago</option>
+                                    <option value="30">few hours Ago</option>
+                                </select>
                             </div>
 
                         </div>
@@ -22,14 +27,7 @@
                                 <h5>Live Flow Rate (Last Minute)</h5> {{>iboxTools}}
                             </div>
                             <div class="ibox-content">
-
-                                <!--Date Range Picker -->
-                                <select id="DateRange">
-                                    <option value="1">A minute Ago</option>
-                                    <option value="7">few minutes Ago</option>
-                                    <option value="30">few hours Ago</option>
-                                </select>
-
+                               <label>Enable/Disable Water </label><input id="toggle-event"  type="checkbox" {{getEnabledStatus}} data-toggle="toggle" data-size="mini">
 
                                     <canvas id="lineChartFLowRate" width="200" height="70"></canvas>
 

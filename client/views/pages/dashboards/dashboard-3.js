@@ -79,9 +79,21 @@ Template.dashboard3.rendered = function() {
             console.log(fields);
             FlashMessages.clear();
             if (fields.value == 1) {
+               //call a server method to update the State collection
+                Meteor.call('changeLeakStatus',true)
+
+                //flash a message for the user
                 FlashMessages.sendWarning(["There is a litte leak"]);
             } else if (fields.value == 2) {
+
+                //call a server method
+                Meteor.call('changeLeakStatus',true)
+
+                //flash a message for the use
                 FlashMessages.sendError(["There is much leak"]);
+            }
+            else{
+
             }
         }
     });
@@ -140,10 +152,12 @@ Template.dashboard3.helpers({
         return Session.get('getTemp');
     },
 
+    getEnabledStatus: function() {
+        return State.findOne({}).waterEnabled ? 'checked' : 'unchecked'
+
+    }
 });
-Template.dashboard3.onCreated(()=>{
-   //can i do little preparation
-})
+
 
 Template.dashboard3.events = {
     'click .currentflow': function(evt) {
@@ -160,7 +174,8 @@ Template.dashboard3.events = {
             case '1':
 
                 //stopping the live query
-                if (handlefifteenMinuteLiveQuery) handleCurrentFlowRateQuery.stop()
+                if (handlefifteenMinuteLiveQuery) handlefifteenMinuteLiveQuery.stop()
+
 
 
                 //Clear the old bar graph
@@ -172,7 +187,6 @@ Template.dashboard3.events = {
 
                 var total = 0, dataLineChart = [], labelsLineChart = [];
                 var allSamples = CurrentFlowRate.find({}, {limit: 60, sort: {created_on: -1}}).fetch();
-                console.log("all samples is..", allSamples)
 
                 for (var i = 59; i >= 0; i--) {
 
@@ -395,9 +409,14 @@ Template.dashboard3.events = {
             default:
                 break;
         }
+    },
+    'change #toggle-event': (event)=> {
+
+        (event.currentTarget.checked) ? Meteor.call('enableWater',true) : Meteor.call('enableWater',false)
+
     }
 
-};
+}
 
 Template.dashboard3.destroyed = function() {
 

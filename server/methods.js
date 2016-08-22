@@ -137,5 +137,9 @@ Meteor.methods({
             created_on: new Date().getTime()
         });
         count = 0;
+    },
+    enableWater: function(status){
+        var id = State.findOne({})._id;
+        State.update(id,{$set:{waterEnabled:status}})
     }
 });

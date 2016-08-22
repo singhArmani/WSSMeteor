@@ -14,6 +14,9 @@ var leakDetected = 0; // 0:no leak, 1:a little leak, 2:much leak
 Meteor.startup(function() {
     console.log('started');
 
+    //setting the default session variable startup value
+
+
     // move the data from low-scale collection to high-scale collection and remove the useless data from collection
     Meteor.setInterval(Meteor.bindEnvironment(function() {
         var today = new Date(),
@@ -82,6 +85,15 @@ Meteor.startup(function() {
       data([4]);
       ss.writeSync(1);
     });
+
+    //if there's nothing in the System collection
+    if(State.find({}).count()=== 0) {
+        //create some startup document
+        State.insert({
+            "leakDetected":false,
+            "waterEnabled":true
+        });
+    }
 });
 
 function monitorLeak() {
@@ -167,16 +179,24 @@ function monitorLeak() {
     // the rules of whether it is leaked
     if (daRate > moRate * 2 || hoRate > moRate * 4 || miRate > moRate * 6 || daySum > warningWaterUsePerDay) {
         leakDetected = 1;
+
+        //updating the state
+        var id = State.findOne({})._id;
+        State.update(id,{$set:{leakDetected:true}})
+
         if (daRate > moRate * 4 || hoRate > moRate * 6 || miRate > moRate * 8 || daySum > maxWaterUsePerDay) {
             leakDetected = 2;
             //TODO: turn off the pipe
         }
-        // if flow rate bacome low, there is no leak
+        // if flow rate become low, there is no leak
         if (miRate < hoRate) {
+
             leakDetected = 0;
+            State.update(id,{$set:{leakDetected:false}})
         }
     } else {
         leakDetected = 0;
+        State.update(id,{$set:{leakDetected:false}})
     }
 
 
