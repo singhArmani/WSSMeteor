@@ -4,9 +4,15 @@ lineChartFLowRate = null;
 
 myBarChart = null;
 
+//live queries
 handleCurrentFlowRateQuery = null;
+handlefifteenMinuteLiveQuery= null;
+
+Template.dashboard3.onCreated(()=>console.log("on Created", this))
 
 Template.dashboard3.rendered = function() {
+    this.callback = "rendered";
+    console.log("on rendered",this)
     Chart.defaults.global.animation.duration = 0;
 
     Meteor.subscribe('todayFlowRate');
@@ -50,6 +56,9 @@ Template.dashboard3.rendered = function() {
     //handling live chart by observing the added fields
         handleCurrentFlowRateQuery = CurrentFlowRate.find().observeChanges({
             added:(id,fields)=>{
+
+
+
                 //Removing one item from the beginning
                 lineChartFLowRate.data.datasets[0].data.shift()
 
@@ -132,7 +141,9 @@ Template.dashboard3.helpers({
     },
 
 });
-
+Template.dashboard3.onCreated(()=>{
+   //can i do little preparation
+})
 
 Template.dashboard3.events = {
     'click .currentflow': function(evt) {
@@ -148,8 +159,9 @@ Template.dashboard3.events = {
         switch(Session.get("selectedDateRange")){
             case '1':
 
-                console.log("Yes I exist...",lineChartFLowRate);
-                //console.log("....Drawing first time.... line chart....");
+                //stopping the live query
+                if(handlefifteenMinuteLiveQuery) handleCurrentFlowRateQuery.stop()
+
 
                 //Clear the old bar graph
                 if (myBarChart){
@@ -188,17 +200,11 @@ Template.dashboard3.events = {
 
                             lineChartFLowRate.update();
 
-
-                            //Session.set('totalFlowRate', data[data.length - 1][1]);
-
-
-
                 }
             });
                 break;
             case '7': console.log("switch statement's value 7");
 
-                console.log(lineChartFLowRate);
                 //stopping the live query
                 handleCurrentFlowRateQuery.stop();
 
@@ -217,13 +223,13 @@ Template.dashboard3.events = {
                 console.log(fifteenMinutesAgo);
 
                 //we will getting ten collection coz it's fifteen minutes ago(dev environ)
-                var SamplesFiveteenMinutesAgo = MonthFlowRate.find({created_on:{$gte:fifteenMinutesAgo}}).fetch();
+                var SamplesFifteenMinutesAgo = MonthFlowRate.find({created_on:{$gte:fifteenMinutesAgo}}).fetch();
 
-                console.log(SamplesFiveteenMinutesAgo);
+                console.log(SamplesFifteenMinutesAgo);
 
                 var dataC = []; //creating an empty data for the new chart
                 var labels=[];
-                SamplesFiveteenMinutesAgo.forEach((obj)=>{
+                SamplesFifteenMinutesAgo.forEach((obj)=>{
                     dataC.push((obj.rate *1000).toFixed(4))
                     labels.push(moment((obj.created_on)).fromNow())
                 });
@@ -279,9 +285,22 @@ Template.dashboard3.events = {
                         }
                     }
                 });
-                // myBarChart = new Chart(barChart).Bar(data);
 
-                // lineChartFLowRate.update()
+
+                // Handle live updates
+                handlefifteenMinuteLiveQuery = MonthFlowRate.find().observeChanges({
+                    added:(id,fields)=>{
+
+                        //Removing one item from the beginning
+                        myBarChart.data.datasets[0].data.shift()
+
+                        //adding one item from the end
+                        myBarChart.data.datasets[0].data.push((fields.rate*1000).toFixed(4))
+
+                        myBarChart.update();
+
+                    }
+                })
 
                 break;
             default: break;
@@ -307,21 +326,21 @@ function drawLineChart(labels,dataC){
         labels: labels,
         datasets: [{
             label: "FLow Rate (L/s)",
-            fill: true,
+            fill: false,
             lineTension: 0.2,
-            backgroundColor: "rgba(60,141,188,0.9)",
-            borderColor: "rgba(60,141,188,0.9)",
-            borderCapStyle: 'round',
+            backgroundColor: "rgba(75,192,192,0.4)",
+            borderColor: "rgba(75,192,192,1)",
+            borderCapStyle: 'butt',
             borderDash: [],
             borderDashOffset: 0.0,
             borderJoinStyle: 'miter',
-            pointBorderColor: "rgba(60,141,188,0.9)",
-            pointBackgroundColor: "rgba(60,141,188,0.9)",
+            pointBorderColor: "rgba(75,192,192,1)",
+            pointBackgroundColor: "#fff",
             pointBorderWidth: 0,
             pointHoverRadius: 0,
-            pointHoverBackgroundColor: "rgba(60,141,188,0.9)",
-            pointHoverBorderColor: "rgba(60,141,188,0.9)",
-            pointHoverBorderWidth: 0,
+            pointHoverBackgroundColor: "rgba(75,192,192,1)",
+            pointHoverBorderColor: "rgba(220,220,220,1)",
+            pointHoverBorderWidth: 1,
             pointRadius: 0,
             pointHitRadius: 0,
             data: dataC,
