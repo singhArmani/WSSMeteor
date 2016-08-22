@@ -316,7 +316,7 @@ Template.dashboard3.events = {
 
                 //stopping the old live queries
                 if (handleCurrentFlowRateQuery) {
-                    handlefifteenMinuteLiveQuery.stop();
+                    handleCurrentFlowRateQuery.stop();
                 }
 
                 if(handlefifteenMinuteLiveQuery) handlefifteenMinuteLiveQuery.stop()
