@@ -156,25 +156,25 @@ Template.dashboard3.events = {
 
         // console.log(event.currentTarget.value);
         Session.set('selectedDateRange',event.currentTarget.value);
-        switch(Session.get("selectedDateRange")){
+        switch(Session.get("selectedDateRange")) {
             case '1':
 
                 //stopping the live query
-                if(handlefifteenMinuteLiveQuery) handleCurrentFlowRateQuery.stop()
+                if (handlefifteenMinuteLiveQuery) handleCurrentFlowRateQuery.stop()
 
 
                 //Clear the old bar graph
-                if (myBarChart){
+                if (myBarChart) {
                     console.log(myBarChart)
-                    myBarChart.data.datasets[0].data =[]; //empty the data
+                    myBarChart.data.datasets[0].data = []; //empty the data
                     myBarChart.destroy();
                 }
 
                 var total = 0, dataLineChart = [], labelsLineChart = [];
-                var allSamples = CurrentFlowRate.find({}, {limit:60,sort:{created_on:-1}}).fetch();
-                console.log("all samples is..",allSamples)
+                var allSamples = CurrentFlowRate.find({}, {limit: 60, sort: {created_on: -1}}).fetch();
+                console.log("all samples is..", allSamples)
 
-                for (var i =  59; i >=0; i--) {
+                for (var i = 59; i >= 0; i--) {
 
                     var val = allSamples[i];
                     console.log(val);
@@ -182,55 +182,52 @@ Template.dashboard3.events = {
                     total += val.rate;
                     labelsLineChart.push('');
                 }
-                drawLineChart(labelsLineChart,dataLineChart);
+                drawLineChart(labelsLineChart, dataLineChart);
 
 
                 //lets handle the change of date now
 
                 handleCurrentFlowRateQuery = CurrentFlowRate.find().observeChanges({
-                added: function(id, fields) {
+                    added: function (id, fields) {
                         console.log(fields);
 
-                            //Removing one item from the beginning
-                            lineChartFLowRate.data.datasets[0].data.shift()
+                        //Removing one item from the beginning
+                        lineChartFLowRate.data.datasets[0].data.shift()
 
 
-                            //adding one item from the end
-                            lineChartFLowRate.data.datasets[0].data.push((fields.rate*1000).toFixed(4))
+                        //adding one item from the end
+                        lineChartFLowRate.data.datasets[0].data.push((fields.rate * 1000).toFixed(4))
 
-                            lineChartFLowRate.update();
+                        lineChartFLowRate.update();
 
-                }
-            });
+                    }
+                });
                 break;
-            case '7': console.log("switch statement's value 7");
+            case '7':
+                console.log("switch statement's value 7");
 
                 //stopping the live query
                 handleCurrentFlowRateQuery.stop();
 
-                // //clearing the old data
-                // lineChartFLowRate.data.datasets[0].data=[];
-                //
-                // //clearing the canvas
-                // lineChartFLowRate.clear();
+                //destroying old chart
+               if(lineChartFLowRate) lineChartFLowRate.destroy()
+                if(myBarChart) myBarChart.destroy()
 
-                lineChartFLowRate.destroy()
 
                 //step 1. Getting all the records 15 minutes ago
                 var today = new Date();//present day
 
-                var fifteenMinutesAgo = new Date(today.valueOf()-15*60*1000);
+                var fifteenMinutesAgo = new Date(today.valueOf() - 15 * 60 * 1000);
                 console.log(fifteenMinutesAgo);
 
                 //we will getting ten collection coz it's fifteen minutes ago(dev environ)
-                var SamplesFifteenMinutesAgo = MonthFlowRate.find({created_on:{$gte:fifteenMinutesAgo}}).fetch();
+                var SamplesFifteenMinutesAgo = MonthFlowRate.find({created_on: {$gte: fifteenMinutesAgo}}).fetch();
 
-                console.log(SamplesFifteenMinutesAgo);
 
                 var dataC = []; //creating an empty data for the new chart
-                var labels=[];
-                SamplesFifteenMinutesAgo.forEach((obj)=>{
-                    dataC.push((obj.rate *1000).toFixed(4))
+                var labels = [];
+                SamplesFifteenMinutesAgo.forEach((obj)=> {
+                    dataC.push((obj.rate * 1000).toFixed(4))
                     labels.push(moment((obj.created_on)).fromNow())
                 });
 
@@ -272,14 +269,14 @@ Template.dashboard3.events = {
                     ]
                 };
 
-                myBarChart = new Chart(barChartctx,{
-                    type:'bar',
-                    data:data,
+                myBarChart = new Chart(barChartctx, {
+                    type: 'bar',
+                    data: data,
                     options: {
                         scales: {
                             yAxes: [{
                                 ticks: {
-                                    beginAtZero:false
+                                    beginAtZero: false
                                 }
                             }]
                         }
@@ -289,13 +286,13 @@ Template.dashboard3.events = {
 
                 // Handle live updates
                 handlefifteenMinuteLiveQuery = MonthFlowRate.find().observeChanges({
-                    added:(id,fields)=>{
+                    added: (id, fields)=> {
 
                         //Removing one item from the beginning
                         myBarChart.data.datasets[0].data.shift()
 
                         //adding one item from the end
-                        myBarChart.data.datasets[0].data.push((fields.rate*1000).toFixed(4))
+                        myBarChart.data.datasets[0].data.push((fields.rate * 1000).toFixed(4))
 
                         myBarChart.update();
 
@@ -303,9 +300,101 @@ Template.dashboard3.events = {
                 })
 
                 break;
-            default: break;
-        }
+            case '30':
 
+                //Clear the old bar graph
+                if (myBarChart) {
+
+                    myBarChart.data.datasets[0].data = []; //empty the data
+                    myBarChart.destroy();
+                }
+
+                if(lineChartFLowRate){
+                    lineChartFLowRate.data.datasets[0].data = [];
+                    lineChartFLowRate.destroy()
+                }
+
+                //stopping the old live queries
+                if (handleCurrentFlowRateQuery) {
+                    handlefifteenMinuteLiveQuery.stop();
+                }
+
+                if(handlefifteenMinuteLiveQuery) handlefifteenMinuteLiveQuery.stop()
+
+
+                //step 1. Getting all the records 15 minutes ago
+                today = new Date();//present day
+
+                var fiveHoursAgo = new Date(today.valueOf() - 5 * 60 * 60 * 1000);
+                console.log(fiveHoursAgo);
+
+                //we will getting ten collection coz it's fifteen minutes ago(dev environ)
+                var SampleFiveHoursAgo = YearFlowRate.find({created_on: {$gte: fiveHoursAgo}}).fetch();
+
+
+                dataC = []; //creating an empty data for the new chart
+                labels = [];
+                SampleFiveHoursAgo.forEach((obj)=> {
+                    dataC.push((obj.rate * 1000).toFixed(4))
+                    labels.push(moment((obj.created_on)).fromNow())
+                });
+
+                //updating the chart
+                barChartctx = document.getElementById("lineChartFLowRate").getContext("2d");
+                //setting up the data
+                data = {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: "Flow Rates",
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)',
+                                'rgba(12, 255, 222, 0.2)',
+                                'rgba(183, 135, 232, 0.2)',
+                                'rgba(49, 115, 85, 0.2)'
+
+
+                            ],
+                            borderColor: [
+                                'rgba(255,99,132,1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)',
+                                'rgba(12, 255, 222, 1)',
+                                'rgba(183, 135, 232, 1)',
+                                'rgba(49, 115, 85, 1)'
+                            ],
+                            borderWidth: 1,
+                            data: dataC,
+                        }
+                    ]
+                };
+
+                myBarChart = new Chart(barChartctx, {
+                    type: 'bar',
+                    data: data,
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: false
+                                }
+                            }]
+                        }
+                    }
+                });
+                break;
+
+            default:
+                break;
+        }
     }
 
 };
