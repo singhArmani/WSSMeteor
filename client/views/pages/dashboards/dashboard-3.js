@@ -7,16 +7,41 @@ myBarChart = null;
 //live queries
 handleCurrentFlowRateQuery = null;
 handlefifteenMinuteLiveQuery= null;
+var total = 0, dataLineChart = [], labelsLineChart = [], allSamples =[];
 
-Template.dashboard3.onCreated(()=>console.log("on Created", this))
+//to subscribe to the data while Template is created
+Template.dashboard3.onCreated(function(){
+    var instance = this;
+    instance.subscribe('todayFlowRate'); //subscribing to the
+    instance.subscribe('shareInfo');
+    instance.subscribe('stateInfo');
+
+
+    instance.autorun((computation)=>{
+        allSamples = CurrentFlowRate.find({}).fetch();
+        console.log(allSamples.length);
+
+        //when we have all subscription ready..
+        if(instance.subscriptionsReady()){
+            for (var i =  59; i >=0; i--) {
+
+                        var val = allSamples[i];
+                        dataLineChart.push((val.rate * 1000).toFixed(4));
+                        total += val.rate;
+                        labelsLineChart.push('');
+                    }
+                    computation.stop();
+        }else{console.log("subscription is not ready yet")}
+    })
+})
+
 
 Template.dashboard3.rendered = function() {
+    console.log("I am rendering...",State.find().fetch());
     this.callback = "rendered";
     console.log("on rendered",this)
     Chart.defaults.global.animation.duration = 0;
 
-    Meteor.subscribe('todayFlowRate');
-    Meteor.subscribe('shareInfo');
 
     //Adding subscription for
      //TODO:Remove autopublish
@@ -29,25 +54,6 @@ Template.dashboard3.rendered = function() {
     var heightWithoutNavbar = $("body > #wrapper").height() - 61;
     $(".sidebard-panel").css("min-height", heightWithoutNavbar + "px");
 
-    var total = 0, dataLineChart = [], labelsLineChart = [], allSamples =[];
-    //Reactive Computation for CurrentFlowRate Collection
-
-    Tracker.autorun((computation)=>{
-        allSamples = CurrentFlowRate.find({}, {limit:60,sort:{created_on:-1}}).fetch();
-        console.log(allSamples.length);
-        if(allSamples.length==60) {
-            for (var i =  59; i >=0; i--) {
-
-                var val = allSamples[i];
-                console.log(val);
-                dataLineChart.push((val.rate * 1000).toFixed(4));
-                total += val.rate;
-                labelsLineChart.push('');
-            }
-            computation.stop();
-        }
-
-    })
 
     //Drawing the chart once we have data ready
     drawLineChart(labelsLineChart,dataLineChart);
@@ -151,11 +157,12 @@ Template.dashboard3.helpers({
     getTem: function() {
         return Session.get('getTemp');
     },
-
     getEnabledStatus: function() {
+
         return State.findOne({}).waterEnabled ? 'checked' : 'unchecked'
 
     }
+
 });
 
 
@@ -180,18 +187,16 @@ Template.dashboard3.events = {
 
                 //Clear the old bar graph
                 if (myBarChart) {
-                    console.log(myBarChart)
                     myBarChart.data.datasets[0].data = []; //empty the data
                     myBarChart.destroy();
                 }
 
                 var total = 0, dataLineChart = [], labelsLineChart = [];
-                var allSamples = CurrentFlowRate.find({}, {limit: 60, sort: {created_on: -1}}).fetch();
+                var allSamples = CurrentFlowRate.find({}).fetch();
 
                 for (var i = 59; i >= 0; i--) {
 
                     var val = allSamples[i];
-                    console.log(val);
                     dataLineChart.push((val.rate * 1000).toFixed(4));
                     total += val.rate;
                     labelsLineChart.push('');
@@ -413,8 +418,8 @@ Template.dashboard3.events = {
     'change #toggle-event': (event)=> {
 
         (event.currentTarget.checked) ? Meteor.call('enableWater',true) : Meteor.call('enableWater',false)
-
     }
+
 
 }
 
@@ -424,6 +429,7 @@ Template.dashboard3.destroyed = function() {
     $('body').removeClass('light-navbar');
     $('#page-wrapper').removeClass('sidebar-content');
 };
+
 
 
 

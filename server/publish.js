@@ -29,3 +29,8 @@ Meteor.publish('todayFlowRate', function() {
 Meteor.publish('shareInfo', function() {
     return Info.find();
 });
+
+
+Meteor.publish('stateInfo', function() {
+    return State.find();
+});

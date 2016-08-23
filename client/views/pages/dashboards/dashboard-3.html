@@ -27,10 +27,14 @@
                                 <h5>Live Flow Rate (Last Minute)</h5> {{>iboxTools}}
                             </div>
                             <div class="ibox-content">
-                               <label>Enable/Disable Water </label><input id="toggle-event"  type="checkbox" {{getEnabledStatus}} data-toggle="toggle" data-size="mini">
 
-                                    <canvas id="lineChartFLowRate" width="200" height="70"></canvas>
+                                {{#if Template.subscriptionsReady}}
+                                    <input id="toggle-event"  type="checkbox" {{getEnabledStatus}} data-toggle="toggle" data-size="mini">Enable/Disable Water
 
+                                    {{else}}
+                                     <small>Loading your Live Graph...</small>
+                                    {{/if}}
+                                <canvas id="lineChartFLowRate" width="200" height="70"></canvas>
 
                             </div>
                         </div>
