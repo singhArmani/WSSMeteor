@@ -1,13 +1,16 @@
 
 
-lineChartFLowRate = null;
-
-myBarChart = null;
+var lineChartFLowRate = null,
+    myBarChart = null,
+    total = 0,
+    dataLineChart = [],
+    labelsLineChart = [],
+    allSamples =[];
 
 //live queries
 handleCurrentFlowRateQuery = null;
 handlefifteenMinuteLiveQuery= null;
-var total = 0, dataLineChart = [], labelsLineChart = [], allSamples =[];
+
 
 //to subscribe to the data while Template is created
 Template.dashboard3.onCreated(function(){
@@ -15,6 +18,8 @@ Template.dashboard3.onCreated(function(){
     instance.subscribe('todayFlowRate'); //subscribing to the
     instance.subscribe('shareInfo');
     instance.subscribe('stateInfo');
+    instance.subscribe('monthFlowRate');
+    instance.subscribe('yearFlowRate');
 
 
     instance.autorun((computation)=>{
@@ -174,7 +179,7 @@ Template.dashboard3.events = {
     },
     'change #DateRange': (event)=>{
 
-
+            event.preventDefault();
         // console.log(event.currentTarget.value);
         Session.set('selectedDateRange',event.currentTarget.value);
         switch(Session.get("selectedDateRange")) {
@@ -208,7 +213,6 @@ Template.dashboard3.events = {
 
                 handleCurrentFlowRateQuery = CurrentFlowRate.find().observeChanges({
                     added: function (id, fields) {
-                        console.log(fields);
 
                         //Removing one item from the beginning
                         lineChartFLowRate.data.datasets[0].data.shift()
@@ -341,18 +345,19 @@ Template.dashboard3.events = {
                 if(handlefifteenMinuteLiveQuery) handlefifteenMinuteLiveQuery.stop()
 
 
-                //step 1. Getting all the records 15 minutes ago
+                //step 1. Getting all the records 5 hours ago
                 today = new Date();//present day
 
                 var fiveHoursAgo = new Date(today.valueOf() - 5 * 60 * 60 * 1000);
                 console.log(fiveHoursAgo);
 
-                //we will getting ten collection coz it's fifteen minutes ago(dev environ)
+                //we will getting 5 docs coz it's 5 hours ago(dev environment)
                 var SampleFiveHoursAgo = YearFlowRate.find({created_on: {$gte: fiveHoursAgo}}).fetch();
 
 
                 dataC = []; //creating an empty data for the new chart
                 labels = [];
+                console.log("sample 5 hours ago..",SampleFiveHoursAgo);
                 SampleFiveHoursAgo.forEach((obj)=> {
                     dataC.push((obj.rate * 1000).toFixed(4))
                     labels.push(moment((obj.created_on)).fromNow())
@@ -360,6 +365,7 @@ Template.dashboard3.events = {
 
                 //updating the chart
                 barChartctx = document.getElementById("lineChartFLowRate").getContext("2d");
+
                 //setting up the data
                 data = {
                     labels: labels,
@@ -419,8 +425,6 @@ Template.dashboard3.events = {
 
         (event.currentTarget.checked) ? Meteor.call('enableWater',true) : Meteor.call('enableWater',false)
     }
-
-
 }
 
 Template.dashboard3.destroyed = function() {

@@ -1,30 +1,16 @@
-Meteor.publish('samples', function() {
-    //console.log("============================================================publish samples");
-    return FlowSamples.find({}, {
-        sort: {
-            created_on: -1
-        },
-        limit: 60
-            // ,
-            // fields: {
-            //     'rate': 1
-            // }
-    });
-});
+
 Meteor.publish('todayFlowRate', function() {
-    //console.log("============================================================publish DumFlowRate");
     return CurrentFlowRate.find({}, {
         sort: {
             created_on: -1
         },
         limit: 60
-            // ,
-            // fields: {
-            //     'rate': 1
-            // }
+
     });
 });
 
+//we can change the limit if needed
+Meteor.publish('monthFlowRate',function(){return MonthFlowRate.find({},{sort:{created_on:-1},limit:20});})
 
 Meteor.publish('shareInfo', function() {
     return Info.find();
@@ -34,3 +20,5 @@ Meteor.publish('shareInfo', function() {
 Meteor.publish('stateInfo', function() {
     return State.find();
 });
+
+Meteor.publish('yearFlowRate', function(){return YearFlowRate.find({},{sort:{created_on:-1},limit:10})})
