@@ -4,6 +4,7 @@ Meteor.startup(function() {
 });
 
 FlashMessages.configure({
-    autoHide: false,
+    autoHide: true,
+    hideDelay:5000,
     autoScroll: true
 });

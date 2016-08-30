@@ -15,9 +15,13 @@ Router.route('/dashboard1', function() {
 Router.route('/dashboard2', function() {
     this.render('dashboard2');
 });
-Router.route('/dashboard3', function() {
+Router.route('/dashboard', function() {
     this.render('dashboard3');
 });
+
+Router.route('/admin',function(){
+    this.render('admin');
+})
 Router.route('/dashboard4', function() {
     this.render('dashboard4');
     this.layout('layout2');

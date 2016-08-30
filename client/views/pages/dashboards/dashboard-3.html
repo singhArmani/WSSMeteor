@@ -13,7 +13,7 @@
                             </h3>
                             <div class="pull-right">
                                 <!--Date Range Picker -->
-                                <select id="DateRange">
+                                <span>Show More Graphs </span>&ensp;<select id="DateRange">
                                     <option value="1">A minute Ago</option>
                                     <option value="7">few minutes Ago</option>
                                     <option value="30">few hours Ago</option>
@@ -28,11 +28,11 @@
                             </div>
                             <div class="ibox-content">
 
-                                {{#if Template.subscriptionsReady}}
+                                {{#if isGraphReady}}
                                     <input id="toggle-event"  type="checkbox" {{getEnabledStatus}} data-toggle="toggle" data-size="mini">Enable/Disable Water
 
                                     {{else}}
-                                     <small>Loading your Live Graph...</small>
+                                     <small>Preparing your Live Live Graph. Please be patient..</small>
                                     {{/if}}
                                 <canvas id="lineChartFLowRate" width="200" height="70"></canvas>
 

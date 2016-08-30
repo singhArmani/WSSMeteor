@@ -20,31 +20,39 @@ Template.dashboard3.onCreated(function(){
     instance.subscribe('stateInfo');
     instance.subscribe('monthFlowRate');
     instance.subscribe('yearFlowRate');
+    instance.subscribe('leakRules')
 
 
     instance.autorun((computation)=>{
-        allSamples = CurrentFlowRate.find({}).fetch();
+        allSamples = CurrentFlowRate.find({},{ sort: {
+            created_on: -1
+        }}).fetch();
         console.log(allSamples.length);
 
-        //when we have all subscription ready..
-        if(instance.subscriptionsReady()){
-            for (var i =  59; i >=0; i--) {
+
+        //when we have all subscription ready for last one minute.
+        if(instance.subscriptionsReady() && allSamples.length==60){
+            for (var i =  allSamples.length-1; i >=0; i--) {
+                console.log('i m here...');
 
                         var val = allSamples[i];
                         dataLineChart.push((val.rate * 1000).toFixed(4));
                         total += val.rate;
                         labelsLineChart.push('');
                     }
+                    Session.set('ReadyToDrawLiveGraph',true);
                     computation.stop();
-        }else{console.log("subscription is not ready yet")}
+        }else{
+            Session.set('ReadyToDrawLiveGraph',false);
+            console.log("subscription is not ready yet")}
     })
 })
 
 
 Template.dashboard3.rendered = function() {
-    console.log("I am rendering...",State.find().fetch());
-    this.callback = "rendered";
-    console.log("on rendered",this)
+
+
+
     Chart.defaults.global.animation.duration = 0;
 
 
@@ -65,22 +73,24 @@ Template.dashboard3.rendered = function() {
 
 
     //handling live chart by observing the added fields
-        handleCurrentFlowRateQuery = CurrentFlowRate.find().observeChanges({
-            added:(id,fields)=>{
 
 
+    handleCurrentFlowRateQuery = CurrentFlowRate.find().observeChanges({
+                added: (id, fields)=> {
 
-                //Removing one item from the beginning
-                lineChartFLowRate.data.datasets[0].data.shift()
+                    //Removing one item from the beginning
+                    lineChartFLowRate.data.datasets[0].data.shift()
 
 
-                //adding one item from the end
-                lineChartFLowRate.data.datasets[0].data.push((fields.rate*1000).toFixed(4))
+                    //adding one item from the end
+                    lineChartFLowRate.data.datasets[0].data.push((fields.rate * 1000).toFixed(4))
 
-                lineChartFLowRate.update();
+                    lineChartFLowRate.update();
 
-            }
-        })
+                }
+
+            })
+
 
 
     var handleInfoQuery = Info.find({
@@ -166,7 +176,8 @@ Template.dashboard3.helpers({
 
         return State.findOne({}).waterEnabled ? 'checked' : 'unchecked'
 
-    }
+    },
+    isGraphReady:()=>Session.get('ReadyToDrawLiveGraph')
 
 });
 
@@ -197,7 +208,9 @@ Template.dashboard3.events = {
                 }
 
                 var total = 0, dataLineChart = [], labelsLineChart = [];
-                var allSamples = CurrentFlowRate.find({}).fetch();
+                var allSamples = CurrentFlowRate.find({},{ sort: {
+                    created_on: -1
+                }}).fetch();
 
                 for (var i = 59; i >= 0; i--) {
 
@@ -244,7 +257,8 @@ Template.dashboard3.events = {
                 console.log(fifteenMinutesAgo);
 
                 //we will getting ten collection coz it's fifteen minutes ago(dev environ)
-                var SamplesFifteenMinutesAgo = MonthFlowRate.find({created_on: {$gte: fifteenMinutesAgo}}).fetch();
+                var SamplesFifteenMinutesAgo = MonthFlowRate.find({created_on: {$gte: fifteenMinutesAgo}}, {sort: {
+                created_on: -1}}).fetch();
 
 
                 var dataC = []; //creating an empty data for the new chart
@@ -352,7 +366,9 @@ Template.dashboard3.events = {
                 console.log(fiveHoursAgo);
 
                 //we will getting 5 docs coz it's 5 hours ago(dev environment)
-                var SampleFiveHoursAgo = YearFlowRate.find({created_on: {$gte: fiveHoursAgo}}).fetch();
+                var SampleFiveHoursAgo = YearFlowRate.find({created_on: {$gte: fiveHoursAgo}},{ sort: {
+                    created_on: -1
+                }}).fetch();
 
 
                 dataC = []; //creating an empty data for the new chart
@@ -424,7 +440,29 @@ Template.dashboard3.events = {
     'change #toggle-event': (event)=> {
 
         (event.currentTarget.checked) ? Meteor.call('enableWater',true) : Meteor.call('enableWater',false)
-    }
+    },
+    'click #setRuleBtn' :(event)=>{
+        event.preventDefault();
+
+        //grabbing the values from the input fields
+         var flow = parseInt($('input[id=flow]').val());
+         var time = parseInt($('input[id=time]').val());
+         var action = $('#actionLeak').val();
+
+
+            var dataForServer = Object.assign({}, {flow: flow, timeFrame: time, action: action});
+
+            //calling the method
+            Meteor.call('setLeakRules', dataForServer, (err, result)=> {
+                if (err) {
+                    FlashMessages.sendError(err.reason, {hideDelay: 2000});
+                } else {
+                    FlashMessages.sendSuccess('Successfully set the new leak Rule');
+                }
+            })
+
+
+    },
 }
 
 Template.dashboard3.destroyed = function() {

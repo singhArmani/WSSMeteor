@@ -26,6 +26,10 @@ Meteor.startup(function() {
             oneHourAgo = new Date(today.valueOf() - (1000 * 60 * 60)), //for test
             fiveMinuteAgo = new Date(today.valueOf() - (5 * 1000 * 60)); //for test
         if (DEBUG) {
+            // dealCurrentFlowRateCollection(oneDayAgo);
+            // dealMonthFlowRateCollection(oneMonthAgo);
+
+            //for testing purpose
             dealCurrentFlowRateCollection(fiveMinuteAgo);
             dealMonthFlowRateCollection(oneHourAgo);
         } else {
@@ -38,8 +42,12 @@ Meteor.startup(function() {
     }), 6000);
 
     // monitor whether it is leaked
+    // Meteor.setInterval(Meteor.bindEnvironment(function() {
+    //     monitorLeak();
+    // }), 6000);
+
     Meteor.setInterval(Meteor.bindEnvironment(function() {
-        monitorLeak();
+        monitorLeakAdvance();
     }), 6000);
 
     // monitor the real-time flow rate
@@ -54,16 +62,9 @@ Meteor.startup(function() {
         var upstream = bin2dec(getAVGupfrac()) * 0.0038145985401459854014598540146 + bin2dec(getAVGupin()) * 250.00000019790250962391171997642;
         var dnstream = bin2dec(getAVGdnfrac()) * 0.0038145985401459854014598540146 + bin2dec(getAVGdnin()) * 250.00000019790250962391171997642;
         var tofvalue = (upstream - dnstream).toFixed(4);
-        if (DEBUG)
-            tofvalue = Math.random() * 5000 + 5000;
+        if (DEBUG) tofvalue = Math.random() * 5000 + 5000;
         var flowrate = (tofvalue * pie * diameter * diameter * 1482 * 1482) / (8 * length * 1000000000);
-        console.log('------------------------------------------------------------');
-        console.log('UP Average', upstream.toFixed(3));
-        console.log('DOWN Average', dnstream.toFixed(3));
-        console.log(' ');
-        console.log('TOF result = ', (upstream - dnstream).toFixed(4), 'ns  (UP Average - DOWN Average)');
-        console.log(' ');
-        // console.log('                  flowrate = ', flowrate.toFixed(6), 'm^3/s');
+
         console.log('                  flowrate = ', (flowrate * 1000).toFixed(6), 'L/s');
 
         var date = new Date();
@@ -72,7 +73,7 @@ Meteor.startup(function() {
             rate: flowrate,
             created_on: date
         }, function(error, result) {
-            //    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>insert to CurrentFlowRate count:" + CurrentFlowRate.find().count() + " resp : ", error, result);
+           // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>insert to CurrentFlowRate count:" + CurrentFlowRate.find().count() + " resp : ", error, result);
         });
 
     }), 1000);
@@ -173,10 +174,11 @@ function monitorLeak() {
     var daySum = dayRate.sum;
     var monthSum = monthRate ? (monthRate.sum * 60 + daySum) : daySum;
     var yearSum = yearRate ? (yearRate.sum * 60 * 60 + monthSum) : monthSum;
-    //console.error("minuteRate.rate:", miRate, "hourRate.rate:", hoRate,
-    //    " dayRate.rate:", daRate, " monthRate.rate:", moRate);
 
-    // the rules of whether it is leaked
+
+
+
+
     if (daRate > moRate * 2 || hoRate > moRate * 4 || miRate > moRate * 6 || daySum > warningWaterUsePerDay) {
         leakDetected = 1;
 
@@ -205,6 +207,66 @@ function monitorLeak() {
     saveInfo("dailyFlowRate", daySum);
     saveInfo("monthlyFlowRate", monthSum);
     saveInfo("yearlyFlowRate", yearSum);
+}
+
+
+
+function monitorLeakAdvance(){
+    // the rules of whether it is leaked
+
+    // create a collection to store rules with follow parameters: flow, time, action
+    // every time we check for leaks, do a for each of each item in the rules collection
+    // write code that checks the following parameters from rules
+
+    // if more than "flow" amount of water has been detected in "time" range period, execute "action"
+    // action is a string, which will have a switch case to decide what to do.
+    // Possible actions: "setLeak", "disableWater"
+
+    // to implement the loop that checks this, there should be an interval that runs every 5 seconds. This will check the previous time range from now to see if "flow" water has passed.
+
+    //amount of water flow in last 6 seconds
+
+    var leakRules = LeakRuleCollection.find({}).fetch(); //getting all the rules
+    leakRules.forEach(function(item){
+        console.log("leak Item is ",item);
+        var amountOfWaterInDesiredTimeFrame = item.flow;
+        var timeRange = item.timeFrame*1000;//in milliseconds
+
+        var today = new Date();
+        var desiredTimeFrame  = new Date(today.valueOf() - (timeRange));
+        console.log("desiredTimeFrame..",desiredTimeFrame);
+        var rateForDesiredTimeFrameObj = CurrentFlowRate.aggregate([{
+            "$match": {
+                "created_on": {
+                    $gt: desiredTimeFrame
+                }
+            }
+        }, {
+            "$group": {
+                _id: null,
+                "rate": {
+                    "$avg": "$rate"
+                }
+            }
+        }])[0];
+        console.log("rate for desired TimeFrame..",rateForDesiredTimeFrameObj)
+
+
+        var amountOfWaterFlowedInDesiredTimeFrame = timeRange*rateForDesiredTimeFrameObj.rate;
+        console.log("amountofWaterFlowed...",amountOfWaterFlowedInDesiredTimeFrame);
+        if(amountOfWaterFlowedInDesiredTimeFrame>= item.flow){
+            switch (item.action){
+                case 'setLeak':
+                    console.log("setting the leak")
+                    break;
+                case 'disableWater':
+                    console.log("disable water");
+                    break;
+                default:
+                    break;
+            }
+        }
+    })
 }
 
 function saveInfo(key, value) {
