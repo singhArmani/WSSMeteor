@@ -5,9 +5,8 @@ Router.configure({
 
 });
 
-//
-// Dashboards routes
-//
+
+
 
 Router.route('/dashboard1', function() {
     this.render('dashboard1');
@@ -15,12 +14,31 @@ Router.route('/dashboard1', function() {
 Router.route('/dashboard2', function() {
     this.render('dashboard2');
 });
-Router.route('/dashboard', function() {
-    this.render('dashboard3');
+Router.route('/dashboard',{
+    onBeforeAction:function(){
+        if(!Meteor.userId()){
+            this.render('unauthorised');
+        }else{
+            this.next();
+        }
+    },
+    action:function(){
+        this.render('dashboard3');
+    }
 });
 
-Router.route('/admin',function(){
-    this.render('admin');
+Router.route('/admin',{
+ onBeforeAction:function(){
+     if(!Meteor.userId()){
+         this.render('unauthorised');
+     }else{
+         this.next();
+     }
+ },
+    action:function(){
+     this.render('admin');
+    }
+
 })
 Router.route('/dashboard4', function() {
     this.render('dashboard4');
@@ -32,6 +50,10 @@ Router.route('/dashboard4l', function() {
 Router.route('/dashboard5', function() {
     this.render('dashboard5');
 });
+
+Router.route('/unauthorised',function(){
+    this.render('unauthorised');
+})
 
 
 //

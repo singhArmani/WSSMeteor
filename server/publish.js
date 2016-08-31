@@ -24,12 +24,12 @@ Meteor.publish('stateInfo', function() {
 
 Meteor.publish('yearFlowRate', function(){return YearFlowRate.find({},{sort:{created_on:-1},limit:10})})
 
-Meteor.publish('leakRules',function(options){
-    check(options,{limit:Number});
+Meteor.publish('leakRules',function(){
+    // check(options,{limit:Number});
 
-    var queryOptions = {
-        limit: options.limit
-    }
+    // var queryOptions = {
+    //     limit: options.limit
+    // }
 
-    return LeakRuleCollection.find({},queryOptions);
+    return LeakRuleCollection.find({});
 });

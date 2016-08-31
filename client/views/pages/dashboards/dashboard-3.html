@@ -13,7 +13,7 @@
                             </h3>
                             <div class="pull-right">
                                 <!--Date Range Picker -->
-                                <span>Show More Graphs </span>&ensp;<select id="DateRange">
+                                <span>Show More Graphs </span>&ensp;<select  id="DateRange">
                                     <option value="1">A minute Ago</option>
                                     <option value="7">few minutes Ago</option>
                                     <option value="30">few hours Ago</option>
@@ -28,7 +28,7 @@
                             </div>
                             <div class="ibox-content">
 
-                                {{#if isGraphReady}}
+                                {{#if Template.subscriptionsReady}}
                                     <input id="toggle-event"  type="checkbox" {{getEnabledStatus}} data-toggle="toggle" data-size="mini">Enable/Disable Water
 
                                     {{else}}

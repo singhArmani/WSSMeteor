@@ -1,5 +1,7 @@
 
 
+
+
 var lineChartFLowRate = null,
     myBarChart = null,
     total = 0,
@@ -14,6 +16,8 @@ handlefifteenMinuteLiveQuery= null;
 
 //to subscribe to the data while Template is created
 Template.dashboard3.onCreated(function(){
+
+    console.log('I am creating...')
     var instance = this;
     instance.subscribe('todayFlowRate'); //subscribing to the
     instance.subscribe('shareInfo');
@@ -32,6 +36,7 @@ Template.dashboard3.onCreated(function(){
 
         //when we have all subscription ready for last one minute.
         if(instance.subscriptionsReady() && allSamples.length==60){
+            console.log("subscription is ready now for 60 limits...")
             for (var i =  allSamples.length-1; i >=0; i--) {
                 console.log('i m here...');
 
@@ -40,10 +45,10 @@ Template.dashboard3.onCreated(function(){
                         total += val.rate;
                         labelsLineChart.push('');
                     }
-                    Session.set('ReadyToDrawLiveGraph',true);
+                    // Session.set('ReadyToDrawLiveGraph',true);
                     computation.stop();
         }else{
-            Session.set('ReadyToDrawLiveGraph',false);
+            // Session.set('ReadyToDrawLiveGraph',false);
             console.log("subscription is not ready yet")}
     })
 })
@@ -51,7 +56,7 @@ Template.dashboard3.onCreated(function(){
 
 Template.dashboard3.rendered = function() {
 
-
+    console.log("i am rendering...")
 
     Chart.defaults.global.animation.duration = 0;
 

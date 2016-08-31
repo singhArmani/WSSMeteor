@@ -1,6 +1,23 @@
 /**
  * Created by singh on 30/08/2016.
  */
+
+//redirects user to login page if not logged in
+
+
+
+
+
+Template.admin.events({
+    'click #logout':function(event){
+            console.log('logging out');
+        Meteor.logout();
+        // Router.go('/unauthorised');
+    }
+
+});
+
+
 Template.setLeakRules.events({
     'click #setRuleBtn' :(event)=>{
         event.preventDefault();
@@ -16,9 +33,9 @@ Template.setLeakRules.events({
         //calling the method
         Meteor.call('setLeakRules', dataForServer, (err, result)=> {
             if (err) {
-                FlashMessages.sendError(err.reason, {hideDelay: 2000});
+                FlashMessages.sendError(err.reason, {hideDelay: 500});
             } else {
-                FlashMessages.sendSuccess('Successfully set the new leak Rule');
+                FlashMessages.sendSuccess('Successfully set the new leak Rule',{hideDelay:500});
             }
         })
 
@@ -31,23 +48,24 @@ Template.showLeakRules.onCreated(function(){
     var templateInstance = this;
     templateInstance.limit = new ReactiveVar(3);//setting limit to 5 first
 
-    //Autorun
+    //subscribing to the leakRule publication
+        var subscription = templateInstance.subscribe('leakRules');
 
-    templateInstance.autorun(function(computation){
-
-        //get the limit
-        var limit = templateInstance.limit.get();
-
-        //subscribing to the leakRule publication
-        var subscription = templateInstance.subscribe('leakRules',{limit:limit});
-
-        //if subscription is ready, set limit to new limit
-        if(subscription.ready()){
-            templateInstance.limit.set(limit);
-        }else{
-            console.log("subscription not ready yet..");
-        }
-    });
+    //Autorun : for setting up the limits
+    // templateInstance.autorun(function(computation){
+    //
+    //     //get the limit
+    //     var limit = templateInstance.limit.get();
+    //
+    //
+    //
+    //     //if subscription is ready, set limit to new limit
+    //     if(subscription.ready()){
+    //         templateInstance.limit.set(limit);
+    //     }else{
+    //         console.log("subscription not ready yet..");
+    //     }
+    // });
 });
 
 Template.showLeakRules.helpers({
@@ -55,13 +73,13 @@ Template.showLeakRules.helpers({
     getLeaKRulesCount:()=>LeakRuleCollection.find().count(),
 });
 
-Template.showLeakRules.events({
-    'click #showOneMore':(event,tpl)=>{
-        event.preventDefault();
-        var newLimit = tpl.limit.get()+1;
-        tpl.limit.set(newLimit);
-    }
-});
+// Template.showLeakRules.events({
+//     'click #showOneMore':(event,tpl)=>{
+//         event.preventDefault();
+//         var newLimit = tpl.limit.get()+1;
+//         tpl.limit.set(newLimit);
+//     }
+// });
 
 Template.leakRule.events({
     'click .delete-rule': function(event){
@@ -71,3 +89,4 @@ Template.leakRule.events({
         LeakRuleCollection.remove({_id:documentId});
     }
 });
+
