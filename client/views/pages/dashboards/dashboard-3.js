@@ -471,6 +471,21 @@ Template.dashboard3.events = {
 }
 
 Template.dashboard3.destroyed = function() {
+    console.log("dashborad template is  destroyed now..");
+
+    console.log("destroying the old chart...in dashboard template..");
+
+    //Cleaning up the things upon destroying..
+
+    if(lineChartFLowRate) lineChartFLowRate.destroy();
+    if(myBarChart) myBarChart.destroy();
+    if(handleCurrentFlowRateQuery) handleCurrentFlowRateQuery.stop();
+    if(handlefifteenMinuteLiveQuery) handlefifteenMinuteLiveQuery.stop();
+
+    dataLineChart =[];
+    labelsLineChart=[];
+    console.log(dataLineChart,labelsLineChart);
+
 
     // Remove extra view class
     $('body').removeClass('light-navbar');

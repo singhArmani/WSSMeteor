@@ -5,40 +5,24 @@
                 <button aria-controls="navbar" aria-expanded="false" data-target="#navbar" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
                     <i class="fa fa-reorder"></i>
                 </button>
-                <a href="{{pathFor route ='dashboard'}}" class="navbar-brand">Dashboard</a>
+                <a href="{{pathFor route ='dashboard'}}" class="navbar-brand">WSS</a>
             </div>
             <div class="navbar-collapse collapse" id="navbar">
                 <ul class="nav navbar-nav">
-                    <li class="active">
+                    <li>
+                        <a aria-expanded="false" role="button" href="{{pathFor route='dashboard'}}">Dashboard</a>
+                    </li>
+                    <li>
                         <a aria-expanded="false" role="button" href="{{pathFor route='admin'}}">Admin</a>
                     </li>
                     <li class="dropdown">
-                        <a aria-expanded="false" role="button" href="#" class="dropdown-toggle" data-toggle="dropdown"> Menu item <span class="caret"></span></a>
+                        <a aria-expanded="false" role="button" href="#" class="dropdown-toggle" data-toggle="dropdown">Pattern Recognition<span class="caret"></span></a>
                         <ul role="menu" class="dropdown-menu">
-                            <li><a href="">Menu item</a></li>
-                            <li><a href="">Menu item</a></li>
-                            <li><a href="">Menu item</a></li>
-                            <li><a href="">Menu item</a></li>
+                            <li><a href="">Pattern 1</a></li>
+                            <li><a href="">Pattern 2</a></li>
                         </ul>
                     </li>
-                    <li class="dropdown">
-                        <a aria-expanded="false" role="button" href="#" class="dropdown-toggle" data-toggle="dropdown"> Menu item <span class="caret"></span></a>
-                        <ul role="menu" class="dropdown-menu">
-                            <li><a href="">Menu item</a></li>
-                            <li><a href="">Menu item</a></li>
-                            <li><a href="">Menu item</a></li>
-                            <li><a href="">Menu item</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a aria-expanded="false" role="button" href="#" class="dropdown-toggle" data-toggle="dropdown"> Menu item <span class="caret"></span></a>
-                        <ul role="menu" class="dropdown-menu">
-                            <li><a href="">Menu item</a></li>
-                            <li><a href="">Menu item</a></li>
-                            <li><a href="">Menu item</a></li>
-                            <li><a href="">Menu item</a></li>
-                        </ul>
-                    </li>
+
                     <li class="dropdown">
                         <a aria-expanded="false" role="button" href="#" class="dropdown-toggle" data-toggle="dropdown"> Menu item <span class="caret"></span></a>
                         <ul role="menu" class="dropdown-menu">
@@ -52,7 +36,7 @@
                 </ul>
                 <ul class="nav navbar-top-links navbar-right">
                     <li>
-                        <a href="{{pathFor route='login'}}">
+                        <a id="logout" href="{{pathFor route='unauthorised'}}">
                             <i class="fa fa-sign-out"></i> Log out
                         </a>
                     </li>

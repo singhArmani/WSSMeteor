@@ -24,6 +24,7 @@ Router.route('/dashboard',{
     },
     action:function(){
         this.render('dashboard3');
+        this.layout('layout2');
     }
 });
 
@@ -37,6 +38,7 @@ Router.route('/admin',{
  },
     action:function(){
      this.render('admin');
+        this.layout('layout2')
     }
 
 })
@@ -266,10 +268,10 @@ Router.route('/invoicePrint', function() {
     this.layout('blankLayout')
 });
 
-Router.route('/login', function() {
-    this.render('login');
-    this.layout('blankLayout')
-});
+// Router.route('/', function() {
+//     this.render('login');
+//     this.layout('blankLayout')
+// });
 
 Router.route('/loginTwo', function() {
     this.render('loginTwo');

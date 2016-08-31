@@ -8,14 +8,14 @@
 
 
 
-Template.admin.events({
-    'click #logout':function(event){
-            console.log('logging out');
-        Meteor.logout();
-        // Router.go('/unauthorised');
-    }
-
-});
+// Template.admin.events({
+//     'click #logout':function(event){
+//             console.log('logging out');
+//         Meteor.logout();
+//         // Router.go('/unauthorised');
+//     }
+//
+// });
 
 
 Template.setLeakRules.events({
