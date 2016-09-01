@@ -2,20 +2,6 @@
  * Created by singh on 30/08/2016.
  */
 
-//redirects user to login page if not logged in
-
-
-
-
-
-// Template.admin.events({
-//     'click #logout':function(event){
-//             console.log('logging out');
-//         Meteor.logout();
-//         // Router.go('/unauthorised');
-//     }
-//
-// });
 
 
 Template.setLeakRules.events({
@@ -46,8 +32,6 @@ Template.setLeakRules.events({
 
 Template.showLeakRules.onCreated(function(){
     var templateInstance = this;
-    templateInstance.limit = new ReactiveVar(3);//setting limit to 5 first
-
     //subscribing to the leakRule publication
         var subscription = templateInstance.subscribe('leakRules');
 
@@ -73,13 +57,6 @@ Template.showLeakRules.helpers({
     getLeaKRulesCount:()=>LeakRuleCollection.find().count(),
 });
 
-// Template.showLeakRules.events({
-//     'click #showOneMore':(event,tpl)=>{
-//         event.preventDefault();
-//         var newLimit = tpl.limit.get()+1;
-//         tpl.limit.set(newLimit);
-//     }
-// });
 
 Template.leakRule.events({
     'click .delete-rule': function(event){

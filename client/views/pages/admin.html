@@ -17,7 +17,7 @@
 
 
 <template name="showLeakRules">
-  <h3>Showing {{getLeaKRulesCount}} Leak Rules</h3>
+  <h3 style="color:#1ab394;">Showing {{getLeaKRulesCount}} Leak Rules</h3>
     {{#if Template.subscriptionsReady}}
         <ul class="list-group">
             {{#each getLeakRules}}
@@ -31,7 +31,7 @@
 </template>
 
 <template name="setLeakRules">
-    <h3>Set Up the New Leak Rules</h3>
+    <h3 style="color:#f8ac59;">Set Up the New Leak Rules</h3>
     <form class="form-Vertical">
         <div class="form-group">
             <label for="flow">Amount of Water</label>

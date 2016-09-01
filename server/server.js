@@ -14,8 +14,6 @@ var leakDetected = 0; // 0:no leak, 1:a little leak, 2:much leak
 Meteor.startup(function() {
     console.log('started');
 
-    //setting the default session variable startup value
-
 
     // move the data from low-scale collection to high-scale collection and remove the useless data from collection
     Meteor.setInterval(Meteor.bindEnvironment(function() {
@@ -249,7 +247,7 @@ function monitorLeakAdvance(){
                 }
             }
         }])[0];
-        console.log("rate for desired TimeFrame..",rateForDesiredTimeFrameObj)
+        console.log("rate for desired TimeFrame..",rateForDesiredTimeFrameObj.rate)
 
 
         var amountOfWaterFlowedInDesiredTimeFrame = timeRange*rateForDesiredTimeFrameObj.rate;
@@ -257,9 +255,11 @@ function monitorLeakAdvance(){
         if(amountOfWaterFlowedInDesiredTimeFrame>= item.flow){
             switch (item.action){
                 case 'setLeak':
-                    console.log("setting the leak")
+                    //TODO:implement set Leak coding functionality
+                    console.log("setting the leak functionality")
                     break;
                 case 'disableWater':
+                    //TODO:implement disable water flow functionality
                     console.log("disable water");
                     break;
                 default:

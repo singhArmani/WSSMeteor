@@ -1,7 +1,5 @@
 
 
-
-
 var lineChartFLowRate = null,
     myBarChart = null,
     total = 0,
@@ -16,6 +14,7 @@ handlefifteenMinuteLiveQuery= null;
 
 //to subscribe to the data while Template is created
 Template.dashboard3.onCreated(function(){
+    Session.set('isGraphReady',false);
 
     console.log('I am creating...')
     var instance = this;
@@ -36,7 +35,8 @@ Template.dashboard3.onCreated(function(){
 
         //when we have all subscription ready for last one minute.
         if(instance.subscriptionsReady() && allSamples.length==60){
-            console.log("subscription is ready now for 60 limits...")
+            console.log("subscription is ready now for 60 limits...");
+            Session.set('isGraphReady',true);
             for (var i =  allSamples.length-1; i >=0; i--) {
                 console.log('i m here...');
 
@@ -491,7 +491,6 @@ Template.dashboard3.destroyed = function() {
     $('body').removeClass('light-navbar');
     $('#page-wrapper').removeClass('sidebar-content');
 };
-
 
 
 
