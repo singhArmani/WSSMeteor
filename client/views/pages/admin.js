@@ -4,6 +4,10 @@
 
 
 
+import setRuleByReact from './reactComponents/setLeakRuleReact.js';
+import './admin.html';
+import { Template } from 'meteor/templating'
+
 Template.setLeakRules.events({
     'click #setRuleBtn' :(event)=>{
         event.preventDefault();
@@ -67,3 +71,9 @@ Template.leakRule.events({
     }
 });
 
+//React Integration
+Template.setLeakRuleReact.helpers({
+    MySetRulesReact(){
+        return setRuleByReact;
+    }
+});
