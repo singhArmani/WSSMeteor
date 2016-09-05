@@ -5,7 +5,6 @@ import React from 'react';
 import BookList from './BookList';
 import LeakRule from './LeakRule';
 import Confirmation from './Confirmation';
-import DeliveryDetails from './DeliveryDetails'
 import Success from './Sucess'
 
 //new here
@@ -32,9 +31,8 @@ export default class LeakStore extends React.Component{
         this.setState({currentStep:this.state.currentStep+1,formValues:formValues});
     }
 
-    oneStepBack(){
+    oneStepBack(formData){
 
-        //decrementing current step by 1
         this.setState({currentStep:this.state.currentStep-1});
     }
 
@@ -43,16 +41,17 @@ export default class LeakStore extends React.Component{
             case 1:
                 return <LeakTypeInfo updateFormData ={this.updateFormData}/>;
             case 2:
-                return <LeakRule leaktype= {this.state.formValues.leakType}
-                                 updateFormData ={this.updateFormData}
+                return <LeakRule updateFormData ={this.updateFormData}
                                  oneStepBack = {this.oneStepBack}
+                                 data = {this.state.formValues}
                 />;
             case 3:
-                return <DeliveryDetails updateFormData ={this.updateFormData}/>;
+
+                return <Confirmation  data = {this.state.formValues}
+                                      updateFormData ={this.updateFormData}
+                                      oneStepBack = {this.oneStepBack}/>;
             case 4:
-                return <Confirmation  data = {this.state.formValues} updateFormData ={this.updateFormData}/>;
-            case 5:
-                return <Success data = {this.state.formValues} />
+                return <Success data = {this.state.formValues} />;
             default:
                 return <BookList updateFormData ={this.updateFormData} />;
         }

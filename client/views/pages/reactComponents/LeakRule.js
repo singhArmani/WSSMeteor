@@ -65,7 +65,7 @@ export default class LeakRule extends React.Component {
     //label For leaktype
     getLabel(){
         var leakInfo= {};
-        if (this.props.leaktype==='Standard Leak'){
+        if (this.props.data.leakType ==='Standard Leak'){
             leakInfo.label ='Amount of Water';
             leakInfo.placeholder = 'Amount of Water in lts'
         }else{
@@ -89,7 +89,7 @@ export default class LeakRule extends React.Component {
 
         return (
             <div className="well clearfix">
-                <h3 className="lead">Please Enter your LeakRule for {this.props.leaktype}</h3>
+                <h3 className="lead">Please Enter your LeakRule for {this.props.data.leakType}</h3>
                 {errorMessage}
                     <form onSubmit={this.handleSubmit}>
                         <div className="form-group">

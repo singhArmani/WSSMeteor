@@ -92,7 +92,7 @@ export default class LeakTypeInfo extends React.Component{
                                 Slow Leak
                             </label>
                         </div>
-                        <button className="btn btn-success pull-right">
+                        <button className="btn btn-success pull-right" type="submit">
                             Next
                         </button>
                     </form>

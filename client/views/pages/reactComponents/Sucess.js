@@ -5,15 +5,12 @@ import React from 'react';
 
 export default class Success extends React.Component {
     render(){
-        var numberOfDays = "1 to 2";
-        if(this.props.data.delivaryOption === 'Normal') numberOfDays = "3 to 4";
 
         return (
-            <div>
-                <h2>Thank you for Shopping with us {this.props.data.fullName}</h2>
-                <h4>
-                    You will soon get {this.props.data.selectedBooks.join(",")} at {this.props.data.shippingAddress} in approximately {numberOfDays} days;
-                </h4>
+            <div className="well">
+                <p className="lead ">
+                    <span className="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> Your {this.props.data.leakType} rule has been stored successfully
+                </p>
             </div>
         );
     }
