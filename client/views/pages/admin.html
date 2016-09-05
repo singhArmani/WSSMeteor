@@ -5,7 +5,7 @@
             <div class="col-lg-12">
                 <div class="ibox float-e-margins">
                     <div class="ibox-content">
-                        {{> setLeakRuleReact}}
+                        {{> LeakStore}}
                         <hr/>
                         {{> showLeakRules}}
                     </div>
@@ -60,6 +60,6 @@
    </li>
 </template>
 
-<template name="setLeakRuleReact">
-    <div>{{> React component=MySetRulesReact}}</div>
+<template name="LeakStore">
+    <div>{{> React component=getLeakStore}}</div>
 </template>

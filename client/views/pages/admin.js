@@ -4,7 +4,7 @@
 
 
 
-import setRuleByReact from './reactComponents/setLeakRuleReact.js';
+import LeakStore from './reactComponents/LeakStore.js';
 import './admin.html';
 import { Template } from 'meteor/templating'
 
@@ -72,8 +72,8 @@ Template.leakRule.events({
 });
 
 //React Integration
-Template.setLeakRuleReact.helpers({
-    MySetRulesReact(){
-        return setRuleByReact;
+Template.LeakStore.helpers({
+    getLeakStore(){
+        return LeakStore;
     }
 });
