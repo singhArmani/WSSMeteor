@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom'
 
 
 export default class LeakRule extends React.Component {
@@ -12,6 +13,7 @@ export default class LeakRule extends React.Component {
         this._onSelect = this._onSelect.bind(this);
         this._onBack = this._onBack.bind(this);
         this.validateInput = this.validateInput.bind(this);
+        this.renderTextField = this.renderTextField.bind(this);
 
     }
     
@@ -46,10 +48,35 @@ export default class LeakRule extends React.Component {
     }
 
     _onSelect(value){
+
         console.log('You selected', value);
+
+
+        //if send sms, email or delay
+       switch(value){
+           case 'delay it':
+
+              ReactDOM.render(this.renderTextField('Please enter time for delay in minutes'),document.getElementById('textField'))
+               break;
+           case 'send sms' :
+               ReactDOM.render(this.renderTextField('Please enter your phone number'),document.getElementById('textField'))
+               break;
+           case 'send email':
+               ReactDOM.render(this.renderTextField('Please enter a valid email address'),document.getElementById('textField'))
+               break;
+           default:
+               //un mounting the component
+               ReactDOM.unmountComponentAtNode(document.getElementById('textField'));
+               break;
+       }
+
         this.setState({action:value})
     }
 
+    //render TextField
+    renderTextField(text){
+            return (<input type="text" placeholder={text} className="form-control"/>);
+    }
 
     //Render Error
     renderError(){
@@ -74,6 +101,8 @@ export default class LeakRule extends React.Component {
         }
         return leakInfo;
     }
+
+
     _onBack(event){
         event.preventDefault();
         console.log('back button hit..going one step back ');
@@ -111,8 +140,10 @@ export default class LeakRule extends React.Component {
                                 <option value="send email">Send Email</option>
                             </select>
                         </div>
+                        <div className="form-group" id="textField">
 
-                            <button className="btn btn-success pull-right " type="submit">Next</button>
+                        </div>
+                        <button className="btn btn-success pull-right " type="submit">Next</button>
                         <button className="btn btn-success pull-left" onClick={this._onBack} type="button">Back</button>
                     </form>
 
