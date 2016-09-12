@@ -22,6 +22,8 @@ export default class LeakStore extends React.Component{
 
         //going one step back
         this.oneStepBack = this.oneStepBack.bind(this);
+
+        this.setUpNewRule = this.setUpNewRule.bind(this);
     }
 
     updateFormData(formData){
@@ -33,6 +35,11 @@ export default class LeakStore extends React.Component{
     oneStepBack(formData){
 
         this.setState({currentStep:this.state.currentStep-1});
+    }
+
+    setUpNewRule(){
+        //bring to start again
+        this.setState({currentStep:1});
     }
 
     render(){
@@ -50,9 +57,9 @@ export default class LeakStore extends React.Component{
                                       updateFormData ={this.updateFormData}
                                       oneStepBack = {this.oneStepBack}/>;
             case 4:
-                return <Success data = {this.state.formValues} />;
+                return <Success data = {this.state.formValues} step = {this.setUpNewRule}/>;
             default:
-                return <BookList updateFormData ={this.updateFormData} />;
+                return <LeakStore updateFormData ={this.updateFormData} />;
         }
     }
 
