@@ -16,14 +16,18 @@ export default class LeakRule extends React.Component {
         this.renderTextField = this.renderTextField.bind(this);
 
     }
-    
+
+
     handleSubmit(event){
         event.preventDefault();
 
         //update the form values here
         var formData = {amountOfWater:this.state.amountOfWater,
                         timePeriod:this.state.timePeriod,
-                        action:this.state.action};
+                        action:this.state.action,
+                        delayFor:this.state.delayFor,
+                        sendSMSTo:this.state.sendSMSTo,
+                        emailTo:this.state.emailTo};
 
         if(this.validateInput()) this.props.updateFormData(formData); //submitting the form after full validation
     }
@@ -31,10 +35,10 @@ export default class LeakRule extends React.Component {
     validateInput(){
 
         //defining the type of error depending upon the field being not filled
-        if(this.state.amountOfWater === ''){
-            this.setState({error:'Please Enter Amount of Water!'});
-        }else if(this.state.timePeriod === ''){
-            this.setState({error:'Please Enter a time range!'});
+        if(this.state.amountOfWater === '' || isNaN(this.state.amountOfWater)){
+            this.setState({error:'Please enter valid amount of Water!'});
+        }else if(this.state.timePeriod === '' || isNaN(this.state.timePeriod)){
+            this.setState({error:'Please enter a valid time range!'});
         }else {
             this.setState({error:false});
             return true;
@@ -42,6 +46,7 @@ export default class LeakRule extends React.Component {
     }
     
     handleChange(event,attribute){
+        console.log(event.target.value);
         var newState = this.state; //grabbing the intial value of state here
         newState[attribute] = event.target.value; //putting the new changed value into respective attribute
         this.setState(newState); //setting this as new state
@@ -56,13 +61,13 @@ export default class LeakRule extends React.Component {
        switch(value){
            case 'delay it':
 
-              ReactDOM.render(this.renderTextField('Please enter time for delay in minutes'),document.getElementById('textField'))
+              ReactDOM.render(this.renderTextField('Please enter time for delay in minutes','delayFor'),document.getElementById('textField'))
                break;
            case 'send sms' :
-               ReactDOM.render(this.renderTextField('Please enter your phone number'),document.getElementById('textField'))
+               ReactDOM.render(this.renderTextField('Please enter your phone number','sendSMSTo'),document.getElementById('textField'))
                break;
            case 'send email':
-               ReactDOM.render(this.renderTextField('Please enter a valid email address'),document.getElementById('textField'))
+               ReactDOM.render(this.renderTextField('Please enter a valid email address','emailTo'),document.getElementById('textField'))
                break;
            default:
                //un mounting the component
@@ -74,8 +79,8 @@ export default class LeakRule extends React.Component {
     }
 
     //render TextField
-    renderTextField(text){
-            return (<input type="text" placeholder={text} className="form-control"/>);
+    renderTextField(text,attribute){
+            return (<input type="text" placeholder={text} onChange={(event)=> this.handleChange(event,attribute)} className="form-control"/>);
     }
 
     //Render Error

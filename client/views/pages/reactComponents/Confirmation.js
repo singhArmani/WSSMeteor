@@ -14,7 +14,25 @@ export default class Confirmation extends React.Component {
         var timeRange = parseInt(this.props.data.timePeriod);
         var action = this.props.data.action;
 
-        var dataForServer = Object.assign({}, {ruleType:typeOfRule, flow: flowVariable, timeFrame: timeRange, action: action});
+        var myObj = this.props.data;
+
+        var actionDetail ;     //construction an object based on chosen action
+
+        if(myObj.delayFor!==undefined){
+            console.log('delay for....')
+            actionDetail = Object.assign({},{actionStatement:action,delayFor:myObj.delayFor});
+        }else if(myObj.sendSMSTo!==undefined){
+            console.log('sendSms....');
+            actionDetail = Object.assign({},{actionStatement:action,sendSMSTo:myObj.sendSMSTo});
+        }
+        else if(myObj.emailTo!==undefined){
+            actionDetail = Object.assign({},{actionStatement:action,emailTo:myObj.emailTo});
+        }
+        else{
+            actionDetail = Object.assign({},{actionStatement:action});
+        }
+
+        var dataForServer = Object.assign({}, {ruleType:typeOfRule, flow: flowVariable, timeFrame: timeRange, action: actionDetail});
 
         //calling the method and inserting into collection
         Meteor.call('setLeakRules', dataForServer, (err, result)=> {
@@ -33,7 +51,6 @@ export default class Confirmation extends React.Component {
 
         this.props.oneStepBack();
     }
-
 
 
     render(){
