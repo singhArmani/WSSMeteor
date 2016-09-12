@@ -39,21 +39,6 @@ Template.showLeakRules.onCreated(function(){
     //subscribing to the leakRule publication
         var subscription = templateInstance.subscribe('leakRules');
 
-    //Autorun : for setting up the limits
-    // templateInstance.autorun(function(computation){
-    //
-    //     //get the limit
-    //     var limit = templateInstance.limit.get();
-    //
-    //
-    //
-    //     //if subscription is ready, set limit to new limit
-    //     if(subscription.ready()){
-    //         templateInstance.limit.set(limit);
-    //     }else{
-    //         console.log("subscription not ready yet..");
-    //     }
-    // });
 });
 
 Template.showLeakRules.helpers({
