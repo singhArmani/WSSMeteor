@@ -27,8 +27,9 @@ export default class LeakStore extends React.Component{
     }
 
     updateFormData(formData){
-
+        console.log("formData",formData)
         var formValues = Object.assign({},this.state.formValues,formData);
+        console.log("formValues",formValues)
         this.setState({currentStep:this.state.currentStep+1,formValues:formValues});
     }
 

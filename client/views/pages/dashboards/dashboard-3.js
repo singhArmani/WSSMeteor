@@ -470,6 +470,8 @@ Template.dashboard3.events = {
     },
 }
 
+
+//on template destroyed
 Template.dashboard3.destroyed = function() {
     console.log("dashborad template is  destroyed now..");
 

@@ -225,8 +225,15 @@ function monitorLeakAdvance(){
     //amount of water flow in last 6 seconds
 
     var leakRules = LeakRuleCollection.find({}).fetch(); //getting all the rules
+
+    //iterating over all the leakRules
     leakRules.forEach(function(item){
+
         console.log("leak Item is ",item);
+
+        var { ruleType, flow, timeFrame, action} = item;
+        console.log("destructuring...",ruleType,flow,timeFrame,action);
+
         var amountOfWaterInDesiredTimeFrame = item.flow;
         var timeRange = item.timeFrame*1000;//in milliseconds
 
@@ -253,6 +260,7 @@ function monitorLeakAdvance(){
         var amountOfWaterFlowedInDesiredTimeFrame = timeRange*rateForDesiredTimeFrameObj.rate;
         console.log("amountofWaterFlowed...",amountOfWaterFlowedInDesiredTimeFrame);
         if(amountOfWaterFlowedInDesiredTimeFrame>= item.flow){
+
             switch (item.action){
                 case 'setLeak':
                     //TODO:implement set Leak coding functionality

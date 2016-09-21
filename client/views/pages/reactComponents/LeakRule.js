@@ -46,16 +46,12 @@ export default class LeakRule extends React.Component {
     }
     
     handleChange(event,attribute){
-        console.log(event.target.value);
         var newState = this.state; //grabbing the intial value of state here
         newState[attribute] = event.target.value; //putting the new changed value into respective attribute
         this.setState(newState); //setting this as new state
     }
 
     _onSelect(value){
-
-        console.log('You selected', value);
-
 
         //if send sms, email or delay
        switch(value){
@@ -122,6 +118,36 @@ export default class LeakRule extends React.Component {
         var leakInfo = this.getLabel();
 
         return (
+        <div>
+        <div className="row">
+            <div className="col-sm-6">
+                    <h4 className="lead">Standard Leak</h4>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        Cras cursus nulla ex, malesuada sagittis dui tincidunt a.
+                        Vivamus eget lorem ex. Donec suscipit nulla est,
+                        quis lacinia urna venenatis vel. Etiam in ante vitae dui
+                        blandit viverra non nec lacus. Nulla nec nisi turpis.
+                        Integer ac ipsum eu turpis vestibulum molestie sagittis non urna.</p>
+
+                    <img  src="images/graphs/StandardLeak.png" className="img-responsive img-thumbnail " alt="Standard Leak"/>
+
+            </div>
+
+
+            <div className="col-sm-6">
+
+                    <h4 className="lead">Slow Leak</h4>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        Cras cursus nulla ex, malesuada sagittis dui tincidunt a.
+                        Vivamus eget lorem ex. Donec suscipit nulla est,
+                        quis lacinia urna venenatis vel. Etiam in ante vitae dui
+                        blandit viverra non nec lacus. Nulla nec nisi turpis.
+                        Integer ac ipsum eu turpis vestibulum molestie sagittis non urna.</p>
+                    <img  src="images/graphs/SlowLeak.png" className="img-responsive img-thumbnail" alt="Slow Leak"/>
+
+            </div>
+        </div>
+            <hr/>
             <div className="well clearfix">
                 <h3 className="lead">Please Enter your LeakRule for {this.props.data.leakType}</h3>
                 {errorMessage}
@@ -152,6 +178,7 @@ export default class LeakRule extends React.Component {
                         <button className="btn btn-success pull-left" onClick={this._onBack} type="button">Back</button>
                     </form>
 
+            </div>
             </div>
         );
     }

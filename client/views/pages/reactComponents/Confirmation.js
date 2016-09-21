@@ -10,22 +10,23 @@ export default class Confirmation extends React.Component {
         event.preventDefault();
         //getting all values
         var typeOfRule = this.props.data.leakType;
-        var flowVariable = parseInt(this.props.data.amountOfWater);
-        var timeRange = parseInt(this.props.data.timePeriod);
+        var flowVariable = parseFloat(this.props.data.amountOfWater);
+        console.log("flowVariable",flowVariable)
+        var timeRange = parseFloat(this.props.data.timePeriod);
         var action = this.props.data.action;
 
         var myObj = this.props.data;
 
         var actionDetail ;     //construction an object based on chosen action
 
-        if(myObj.delayFor!==undefined){
+        if(typeof myObj.delayFor!=="undefined"){
             console.log('delay for....')
             actionDetail = Object.assign({},{actionStatement:action,delayFor:myObj.delayFor});
-        }else if(myObj.sendSMSTo!==undefined){
+        }else if(typeof myObj.sendSMSTo!== "undefined"){
             console.log('sendSms....');
             actionDetail = Object.assign({},{actionStatement:action,sendSMSTo:myObj.sendSMSTo});
         }
-        else if(myObj.emailTo!==undefined){
+        else if(typeof myObj.emailTo!=="undefined"){
             actionDetail = Object.assign({},{actionStatement:action,emailTo:myObj.emailTo});
         }
         else{
@@ -34,6 +35,7 @@ export default class Confirmation extends React.Component {
 
         var dataForServer = Object.assign({}, {ruleType:typeOfRule, flow: flowVariable, timeFrame: timeRange, action: actionDetail});
 
+        console.log("dataForServer",dataForServer)
         //calling the method and inserting into collection
         Meteor.call('setLeakRules', dataForServer, (err, result)=> {
             if (err) {

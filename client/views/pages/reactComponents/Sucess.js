@@ -12,7 +12,7 @@ export default class Success extends React.Component {
 
     setUpNewRule(event){
         event.preventDefault();
-        this.props.step(); //bringing to the intial stage
+        this.props.step(); //bringing to the initial stage
     }
     render(){
 
