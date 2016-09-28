@@ -231,49 +231,59 @@ function monitorLeakAdvance(){
 
         console.log("leak Item is ",item);
 
-        var { ruleType, flow, timeFrame, action} = item;
-        console.log("destructuring...",ruleType,flow,timeFrame,action);
+        //destructuring
+        let { ruleType, flow, timeFrame, action} = item;
 
-        var amountOfWaterInDesiredTimeFrame = item.flow;
-        var timeRange = item.timeFrame*1000;//in milliseconds
+        switch(ruleType) {
+            case "Standard Leak":
+                var amountOfWaterInDesiredTimeFrame = flow;
+                var timeRange = timeFrame*1000;//in milliseconds
 
-        var today = new Date();
-        var desiredTimeFrame  = new Date(today.valueOf() - (timeRange));
-        console.log("desiredTimeFrame..",desiredTimeFrame);
-        var rateForDesiredTimeFrameObj = CurrentFlowRate.aggregate([{
-            "$match": {
-                "created_on": {
-                    $gt: desiredTimeFrame
+                var today = new Date();
+                var desiredTimeFrame  = new Date(today.valueOf() - (timeRange));
+                var rateForDesiredTimeFrameObj = CurrentFlowRate.aggregate([{
+                    "$match": {
+                        "created_on": {
+                            $gt: desiredTimeFrame
+                        }
+                    }
+                }, {
+                    "$group": {
+                        _id: null,
+                        "rate": {
+                            "$avg": "$rate"
+                        }
+                    }
+                }])[0];
+                console.log("rate for desired TimeFrame..",rateForDesiredTimeFrameObj.rate)
+
+
+                var amountOfWaterFlowedInDesiredTimeFrame = timeRange*rateForDesiredTimeFrameObj.rate;
+                console.log("amountOfWaterFlowed...",amountOfWaterFlowedInDesiredTimeFrame);
+                if(amountOfWaterFlowedInDesiredTimeFrame>= item.flow){
+
+                    switch (item.action){
+                        case 'setLeak':
+                            //TODO:implement set Leak coding functionality
+                            console.log("setting the leak functionality")
+                            break;
+                        case 'disableWater':
+                            //TODO:implement disable water flow functionality
+                            console.log("disable water");
+                            break;
+                        default:
+                            break;
+                    }
                 }
-            }
-        }, {
-            "$group": {
-                _id: null,
-                "rate": {
-                    "$avg": "$rate"
-                }
-            }
-        }])[0];
-        console.log("rate for desired TimeFrame..",rateForDesiredTimeFrameObj.rate)
+                break;
+            case "Slow Leak": console.log("Slow Leak type");
+                 //finding the minimum for that period of time
+                var minimumAggregation
 
-
-        var amountOfWaterFlowedInDesiredTimeFrame = timeRange*rateForDesiredTimeFrameObj.rate;
-        console.log("amountofWaterFlowed...",amountOfWaterFlowedInDesiredTimeFrame);
-        if(amountOfWaterFlowedInDesiredTimeFrame>= item.flow){
-
-            switch (item.action){
-                case 'setLeak':
-                    //TODO:implement set Leak coding functionality
-                    console.log("setting the leak functionality")
-                    break;
-                case 'disableWater':
-                    //TODO:implement disable water flow functionality
-                    console.log("disable water");
-                    break;
-                default:
-                    break;
-            }
+                break;
         }
+
+
     })
 }
 

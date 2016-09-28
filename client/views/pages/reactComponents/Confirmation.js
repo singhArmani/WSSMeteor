@@ -1,4 +1,6 @@
 import React from 'react';
+import StandardLeak from './StandardLeak'
+import SlowLeak from './SlowLeak'
 
 export default class Confirmation extends React.Component {
     constructor(props){
@@ -17,13 +19,13 @@ export default class Confirmation extends React.Component {
 
         var myObj = this.props.data;
 
-        var actionDetail ;     //construction an object based on chosen action
+        var actionDetail ;     //constructing an object based on chosen action
 
         if(typeof myObj.delayFor!=="undefined"){
-            console.log('delay for....')
+
             actionDetail = Object.assign({},{actionStatement:action,delayFor:myObj.delayFor});
         }else if(typeof myObj.sendSMSTo!== "undefined"){
-            console.log('sendSms....');
+
             actionDetail = Object.assign({},{actionStatement:action,sendSMSTo:myObj.sendSMSTo});
         }
         else if(typeof myObj.emailTo!=="undefined"){
@@ -54,10 +56,25 @@ export default class Confirmation extends React.Component {
         this.props.oneStepBack();
     }
 
+    _renderLeak(leak){
+        if(leak==='Standard Leak') {
+            return (
+                <StandardLeak/>
+            );
+        }else{
+            return (
+                <SlowLeak/>
+            );
+        }
+    }
 
     render(){
+
+        let renderLeakType = this._renderLeak(this.props.data.leakType);
         return (
-            <div className="well clearfix">
+            <div>
+                {renderLeakType}
+                <div className="col-sm-6 well clearfix">
                 <h3 className="lead">Are you sure you want to set up this new Leak Rule? </h3>
                     <form onSubmit ={this.handleSubmit}>
                         <div>
@@ -79,6 +96,7 @@ export default class Confirmation extends React.Component {
                         <button className="btn btn-success pull-right" type="submit">Confirm</button>
                         <button className="btn btn-success pull-left" onClick={this._onBack}>Back</button>
                     </form>
+            </div>
             </div>
         );
     }

@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
+import StandardLeak from './StandardLeak'
+import SlowLeak from './SlowLeak'
 
 
 export default class LeakRule extends React.Component {
@@ -111,44 +113,28 @@ export default class LeakRule extends React.Component {
         this.props.oneStepBack();
     }
 
-    
+    _renderLeak(leak){
+        if(leak==='Standard Leak') {
+            return (
+               <StandardLeak/>
+            );
+        }else{
+            return (
+                <SlowLeak/>
+            );
+        }
+    }
+
     render(){
         var errorMessage = this.renderError();
 
         var leakInfo = this.getLabel();
 
+        let renderLeakType = this._renderLeak(this.props.data.leakType);
         return (
         <div>
-        <div className="row">
-            <div className="col-sm-6">
-                    <h4 className="lead">Standard Leak</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Cras cursus nulla ex, malesuada sagittis dui tincidunt a.
-                        Vivamus eget lorem ex. Donec suscipit nulla est,
-                        quis lacinia urna venenatis vel. Etiam in ante vitae dui
-                        blandit viverra non nec lacus. Nulla nec nisi turpis.
-                        Integer ac ipsum eu turpis vestibulum molestie sagittis non urna.</p>
-
-                    <img  src="images/graphs/StandardLeak.png" className="img-responsive img-thumbnail " alt="Standard Leak"/>
-
-            </div>
-
-
-            <div className="col-sm-6">
-
-                    <h4 className="lead">Slow Leak</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Cras cursus nulla ex, malesuada sagittis dui tincidunt a.
-                        Vivamus eget lorem ex. Donec suscipit nulla est,
-                        quis lacinia urna venenatis vel. Etiam in ante vitae dui
-                        blandit viverra non nec lacus. Nulla nec nisi turpis.
-                        Integer ac ipsum eu turpis vestibulum molestie sagittis non urna.</p>
-                    <img  src="images/graphs/SlowLeak.png" className="img-responsive img-thumbnail" alt="Slow Leak"/>
-
-            </div>
-        </div>
-            <hr/>
-            <div className="well clearfix">
+            {renderLeakType}
+            <div className=" col-sm-6 well clearfix">
                 <h3 className="lead">Please Enter your LeakRule for {this.props.data.leakType}</h3>
                 {errorMessage}
                     <form onSubmit={this.handleSubmit}>
