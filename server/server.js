@@ -13,7 +13,14 @@ var leakDetected = 0; // 0:no leak, 1:a little leak, 2:much leak
 
 Meteor.startup(function() {
     console.log('started');
-
+    // code to run on server at startup
+    var waterUsageState =[
+        {
+            "waterUsageHasStarted" : false,
+            "created_at" : null
+        }
+    ];
+    if(WaterUsageState.find().count()==0)WaterUsageState.insert(waterUsageState.pop());
 
     // move the data from low-scale collection to high-scale collection and remove the useless data from collection
     Meteor.setInterval(Meteor.bindEnvironment(function() {
@@ -39,10 +46,6 @@ Meteor.startup(function() {
         }
     }), 6000);
 
-    // monitor whether it is leaked
-    // Meteor.setInterval(Meteor.bindEnvironment(function() {
-    //     monitorLeak();
-    // }), 6000);
 
     Meteor.setInterval(Meteor.bindEnvironment(function() {
         monitorLeakAdvance();
@@ -63,6 +66,18 @@ Meteor.startup(function() {
         if (DEBUG) tofvalue = Math.random() * 5000 + 5000;
         var flowrate = (tofvalue * pie * diameter * diameter * 1482 * 1482) / (8 * length * 1000000000);
 
+        //TODO: can we catch flow rate value here
+
+        let waterUsageStarted = WaterUsageState.find({}).fetch()[0].waterUsageHasStarted;
+
+        if(!waterUsageStarted) {
+            if (flowrate > 0.01) {
+                //store that state of water usage has started into a collection
+                console.log("water usage started at ",new Date());
+                WaterUsageState.update({"created_at": null}, {"waterUsageHasStarted": true, "created_at": new Date()});
+            }
+        }
+
         console.log('                  flowrate = ', (flowrate * 1000).toFixed(6), 'L/s');
 
         var date = new Date();
@@ -75,6 +90,8 @@ Meteor.startup(function() {
         });
 
     }), 1000);
+
+
 
     var wrate = count / calibrationFactor;
     var flowmillilitres = (wrate / 60) * 1000;
@@ -210,19 +227,6 @@ function monitorLeak() {
 
 
 function monitorLeakAdvance(){
-    // the rules of whether it is leaked
-
-    // create a collection to store rules with follow parameters: flow, time, action
-    // every time we check for leaks, do a for each of each item in the rules collection
-    // write code that checks the following parameters from rules
-
-    // if more than "flow" amount of water has been detected in "time" range period, execute "action"
-    // action is a string, which will have a switch case to decide what to do.
-    // Possible actions: "setLeak", "disableWater"
-
-    // to implement the loop that checks this, there should be an interval that runs every 5 seconds. This will check the previous time range from now to see if "flow" water has passed.
-
-    //amount of water flow in last 6 seconds
 
     var leakRules = LeakRuleCollection.find({}).fetch(); //getting all the rules
 
@@ -262,10 +266,12 @@ function monitorLeakAdvance(){
                 console.log("amountOfWaterFlowed...",amountOfWaterFlowedInDesiredTimeFrame);
                 if(amountOfWaterFlowedInDesiredTimeFrame>= item.flow){
 
-                    switch (item.action){
-                        case 'setLeak':
-                            //TODO:implement set Leak coding functionality
-                            console.log("setting the leak functionality")
+                    switch (item.action.actionStatement){
+                        case 'turn off water immediate':
+
+                            //TODO:Turn the water off functionality
+                             State.update({"waterEnabled":true},{"leakDetected":true,"waterEnabled":false})
+                            console.log("turn off water immediate")
                             break;
                         case 'disableWater':
                             //TODO:implement disable water flow functionality
