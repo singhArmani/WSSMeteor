@@ -4,7 +4,7 @@
 
 
 
-import LeakStore from './reactComponents/LeakStore.js';
+import LeakStore from './reactComponents/creatingLeakRules/LeakStore.js';
 import './admin.html';
 import { Template } from 'meteor/templating'
 
@@ -35,9 +35,8 @@ Template.setLeakRules.events({
 
 
 Template.showLeakRules.onCreated(function(){
-    var templateInstance = this;
     //subscribing to the leakRule publication
-        var subscription = templateInstance.subscribe('leakRules');
+        var subscription = this.subscribe('leakRules');
 
 });
 
@@ -62,3 +61,36 @@ Template.LeakStore.helpers({
         return LeakStore;
     }
 });
+
+Template.leakPopUp.onCreated(function(){
+    var instance = this;
+    instance.subscribe('stateInfo');
+    instance.subscribe('leakDetectedHistory');
+    instance.subscribe('leakRules');
+    instance.subscribe('waterUsageState')
+})
+
+Template.leakPopUp.helpers({
+    isLeakDetected:function() {
+        console.log("the state is ", State.find({}).fetch()[0])
+        return State.find({}).fetch()[0].leakDetected;
+    },
+    showModal(){
+        let leakObjectHistory=  LeakDetectedHistory.find({},{
+            sort:{leakTriggeredAt:-1},limit:1
+        }).fetch()[0];
+
+        //getting the leak rule type info which triggered the leak
+        let leakRuleObject = LeakRuleCollection.find({_id:leakObjectHistory.leakRuleId}).fetch()[0];
+
+        //getting the dataset for the graph
+        let dateSinceWaterUsage = WaterUsageState.find({}).fetch()[0].createdAt;
+        let value = CurrentFlowRate.find({"created_on":{$gte:dateSinceWaterUsage}}).fetch();
+        console.log("graph values ",value);
+
+        let leakObject = Object.assign({},{leakRuleObject:leakRuleObject,leakTriggeredAt:leakObjectHistory.leakTriggeredAt})
+
+        Modal.show('leakModal',leakObject);
+    }
+
+})

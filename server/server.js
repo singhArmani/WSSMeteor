@@ -270,8 +270,13 @@ function monitorLeakAdvance(){
                         case 'turn off water immediate':
 
                             //TODO:Turn the water off functionality
-                             State.update({"waterEnabled":true},{"leakDetected":true,"waterEnabled":false})
-                            console.log("turn off water immediate")
+                             State.update({"waterEnabled":true},{"leakDetected":true,"waterEnabled":false});
+
+                            //Notifying to the client about the leakinfo
+                            //which rule triggered the leak and time of triggering.
+                            //time at which the water usage started,
+                            saveLeakHistory(item._id,new Date());
+
                             break;
                         case 'disableWater':
                             //TODO:implement disable water flow functionality
@@ -399,3 +404,13 @@ function dealMonthFlowRateCollection(time) {
     });
 }
 
+function saveLeakHistory(leakRuleId,leakTriggeredAt){
+   if (LeakDetectedHistory.find({}).fetch().length <=10){
+       LeakDetectedHistory.insert({leakRuleId:leakRuleId,
+                                    leakTriggeredAt:leakTriggeredAt});
+   }
+   else{
+       //remove the last one and insert a new one
+       LeakDetectedHistory.remove()
+   }
+}

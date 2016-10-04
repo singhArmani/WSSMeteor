@@ -17,10 +17,16 @@ Meteor.publish('shareInfo', function() {
     return Info.find();
 });
 
-
+Meteor.publish('leakDetectedHistory', function(){
+    return LeakDetectedHistory.find();
+})
 Meteor.publish('stateInfo', function() {
     return State.find();
 });
+
+Meteor.publish('waterUsageState',function () {
+    return WaterUsageState.find();
+})
 
 Meteor.publish('yearFlowRate', function(){return YearFlowRate.find({},{sort:{created_on:-1},limit:10})})
 

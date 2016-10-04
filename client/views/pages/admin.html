@@ -1,5 +1,6 @@
 <template name="admin">
     {{> flashMessages}}
+    {{> leakPopUp}}
     <div class="wrapper wrapper-content">
         <div class="row">
             <div class="col-lg-12">
@@ -64,4 +65,49 @@
 
 <template name="LeakStore">
     <div>{{> React component=getLeakStore}}</div>
+</template>
+
+<template name="leakPopUp">
+    {{#if Template.subscriptionsReady}}
+        {{#if isLeakDetected}}
+                     {{showModal}}
+                    {{else}}
+                 <div></div>
+        {{/if}}
+
+    {{/if}}
+</template>
+
+<template name="leakModal">
+    <div class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title text-danger">Standard Leak Detected</h4>
+                </div>
+
+
+                <div class="modal-body">
+                    <p>Lorem ipsum</p>
+                    <ul class="list-group">
+                        <li class="list-group-item">Type of leak: {{this.leakRuleObject.ruleType}}</li>
+                        <li class="list-group-item">Flow:{{this.leakRuleObject.flow}}</li>
+                        <li class="list-group-item">Time: {{this.leakRuleObject.timeFrame}}</li>
+                        <li class="list-group-item">Type of leak: {{this.leakRuleObject.ruleType}}</li>
+                        <li class="list-group-item">Leak Triggered At:  {{this.leakTriggeredAt}}</li>
+
+                    </ul>
+                    <canvas id="leakGraph">
+
+                    </canvas>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
 </template>
