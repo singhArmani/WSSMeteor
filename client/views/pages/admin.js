@@ -67,7 +67,8 @@ Template.leakPopUp.onCreated(function(){
     instance.subscribe('stateInfo');
     instance.subscribe('leakDetectedHistory');
     instance.subscribe('leakRules');
-    instance.subscribe('waterUsageState')
+    instance.subscribe('waterUsageState');
+    instance.subscribe('todayFlowRate');
 })
 
 Template.leakPopUp.helpers({
@@ -83,14 +84,36 @@ Template.leakPopUp.helpers({
         //getting the leak rule type info which triggered the leak
         let leakRuleObject = LeakRuleCollection.find({_id:leakObjectHistory.leakRuleId}).fetch()[0];
 
-        //getting the dataset for the graph
-        let dateSinceWaterUsage = WaterUsageState.find({}).fetch()[0].createdAt;
-        let value = CurrentFlowRate.find({"created_on":{$gte:dateSinceWaterUsage}}).fetch();
-        console.log("graph values ",value);
+        //getting the data set for the graph
+        // let dateSinceWaterUsage = WaterUsageState.find({}).fetch()[0].created_at;
+        //
+        // //value is reactive data source though
+        // let value = CurrentFlowRate.find({"created_on":{$gte:dateSinceWaterUsage}}).fetch();
+        // let intialSnapshot = value;
+        // console.log("graph values ",intialSnapshot);
 
         let leakObject = Object.assign({},{leakRuleObject:leakRuleObject,leakTriggeredAt:leakObjectHistory.leakTriggeredAt})
 
         Modal.show('leakModal',leakObject);
-    }
+    },
+
 
 })
+
+Template.leakModal.helpers({
+    getEnableStatus(){
+         return State.findOne({}).waterEnabled;
+    }
+});
+
+Template.leakModal.events = {
+    'click :button': (event)=> {
+        let id = State.findOne()._id;
+        State.update({_id:id},{
+            $set: {
+                "leakDetected": false
+            }
+        });
+    }
+}
+

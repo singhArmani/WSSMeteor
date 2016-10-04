@@ -270,7 +270,8 @@ function monitorLeakAdvance(){
                         case 'turn off water immediate':
 
                             //TODO:Turn the water off functionality
-                             State.update({"waterEnabled":true},{"leakDetected":true,"waterEnabled":false});
+                            let id = State.findOne()._id;
+                             State.update({_id:id},{"leakDetected":true,"waterEnabled":false});
 
                             //Notifying to the client about the leakinfo
                             //which rule triggered the leak and time of triggering.
